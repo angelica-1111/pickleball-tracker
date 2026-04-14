@@ -8,16 +8,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
-.tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e5e5; }
+body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; padding: 1.5rem; max-width: 680px; margin: 0 auto; }
+.tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e5e5; flex-wrap: wrap; }
 .tab { font-size: 14px; font-weight: 500; color: #888; background: none; border: none; cursor: pointer; padding: 6px 14px 10px; position: relative; }
 .tab.active { color: #1a1a1a; }
 .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #1a1a1a; border-radius: 2px 2px 0 0; }
 .panel { display: none; }
 .panel.active { display: block; }
-.section-title { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
 .section { margin-bottom: 2rem; }
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+.section-title { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
 .stat-card { background: #f5f5f5; border-radius: 8px; padding: 0.85rem 1rem; }
 .stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
 .stat-value { font-size: 22px; font-weight: 500; color: #1a1a1a; }
@@ -33,7 +33,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .skill-btns { display: flex; gap: 4px; }
 .skill-btn { width: 24px; height: 24px; border: 1px solid #d0d0d0; border-radius: 6px; background: transparent; color: #1a1a1a; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .skill-btn:hover { background: #f5f5f5; }
-.notes-area { width: 100%; min-height: 70px; font-size: 14px; font-family: system-ui, sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 10px; resize: vertical; margin-bottom: 8px; }
+.notes-area { width: 100%; min-height: 70px; font-size: 14px; font-family: system-ui,sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 10px; resize: vertical; margin-bottom: 8px; }
 .log-btn { height: 36px; padding: 0 18px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
 .log-btn:hover { background: #f5f5f5; }
 .today-note { font-size: 12px; color: #888; margin-top: 6px; }
@@ -47,7 +47,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .form-row select, .form-row input { height: 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; }
 .form-row button { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
 .form-row button:hover { background: #f5f5f5; }
-.match-notes-input { width: 100%; height: 36px; font-size: 14px; font-family: system-ui, sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; margin-bottom: 8px; }
+.match-notes-input { width: 100%; height: 36px; font-size: 14px; font-family: system-ui,sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; margin-bottom: 8px; }
 .match-log { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
 .match-entry { font-size: 13px; color: #888; padding: 0.65rem 0.9rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; }
 .match-top { display: flex; align-items: center; gap: 10px; }
@@ -66,10 +66,10 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .export-btn:hover { background: #f5f5f5; }
 .import-input { display: none; }
 .chart-wrap { width: 100%; overflow-x: auto; }
-canvas { display: block; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.drill-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a1a; cursor: pointer; background: #f5f5f5; padding: 5px 12px; border-radius: 99px; border: 1px solid #e5e5e5; }
 </style>
 </head>
 <body>
@@ -81,11 +81,15 @@ canvas { display: block; }
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('skills',this)">Skills</button>
-  <button class="tab" onclick="switchTab('matches',this)">Matches</button>
-  <button class="tab" onclick="switchTab('progress',this)">Progress</button>
+  <button class="tab active" id="tab-btn-dashboard" onclick="switchTab('dashboard', this)">Dashboard</button>
+  <button class="tab" id="tab-btn-skills" onclick="switchTab('skills', this)">Skills</button>
+  <button class="tab" id="tab-btn-matches" onclick="switchTab('matches', this)">Matches</button>
+  <button class="tab" id="tab-btn-drills" onclick="switchTab('drills', this)">Drills</button>
+  <button class="tab" id="tab-btn-progress" onclick="switchTab('progress', this)">Progress</button>
+  <button class="tab" id="tab-btn-notes" onclick="switchTab('notes', this)">Notes</button>
 </div>
 
+<!-- DASHBOARD -->
 <div id="tab-dashboard" class="panel active">
   <div class="section">
     <div class="stats-grid" id="dash-stats"></div>
@@ -107,6 +111,7 @@ canvas { display: block; }
   <div id="dash-insight" style="margin-top:0.5rem;"></div>
 </div>
 
+<!-- SKILLS -->
 <div id="tab-skills" class="panel">
   <div class="section">
     <div class="section-title">Today's ratings</div>
@@ -114,7 +119,7 @@ canvas { display: block; }
   </div>
   <div class="section">
     <div class="section-title">Notes for today</div>
-    <textarea class="notes-area" id="day-notes" placeholder="e.g. kept popping up third shot drops, dinking felt sharp..."></textarea>
+    <textarea class="notes-area" id="day-notes" placeholder="e.g. kept popping up third shots, dinking felt sharp..."></textarea>
     <button class="log-btn" onclick="logDay()">Save today's snapshot</button>
     <div id="today-note" class="today-note"></div>
   </div>
@@ -124,12 +129,13 @@ canvas { display: block; }
   </div>
 </div>
 
+<!-- MATCHES -->
 <div id="tab-matches" class="panel">
   <div class="stats-grid" id="stats-grid"></div>
   <div class="section">
     <div class="section-title">Log a match</div>
     <div class="form-row">
-      <select id="type-select"><option value="doubles">Doubles</option><option value="singles">Singles</option><option value="drills">Drills</option></select>
+      <select id="type-select"><option value="doubles">Doubles</option><option value="singles">Singles</option></select>
       <input type="number" id="my-score" placeholder="Your score" min="0" style="width:110px;" />
       <input type="number" id="opp-score" placeholder="Their score" min="0" style="width:110px;" />
       <input type="text" id="opponent-input" placeholder="Opponent (optional)" style="width:130px;" />
@@ -140,6 +146,29 @@ canvas { display: block; }
   <div class="match-log" id="match-log"></div>
 </div>
 
+<!-- DRILLS -->
+<div id="tab-drills" class="panel">
+  <div class="section">
+    <div class="section-title">Log a drill session</div>
+    <div style="font-size:13px;color:#888;margin-bottom:12px;">Check everything you practiced today.</div>
+    <div id="drill-checklist"></div>
+    <div class="form-row" style="margin-top:12px;">
+      <input type="number" id="drill-duration" placeholder="Duration (mins)" min="1" style="width:150px;" />
+      <input type="text" id="drill-notes" placeholder="Notes (optional)" style="flex:1;min-width:120px;" />
+      <button onclick="logDrillSession()">+ Log session</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Drill stats</div>
+    <div id="drill-stats"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Session history</div>
+    <div id="drill-history"></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
 <div id="tab-progress" class="panel">
   <div class="section">
     <div class="section-title">Skill trends</div>
@@ -152,6 +181,7 @@ canvas { display: block; }
   </div>
 </div>
 
+<!-- NOTES -->
 <div id="tab-notes" class="panel">
   <div class="section">
     <div class="section-title">Daily notes log</div>
@@ -174,24 +204,22 @@ const SKILLS = [
   { name: "Reset", key: "reset" },
   { name: "Kill shot", key: "kill" },
 ];
-const COLORS = ["#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#BA7517","#639922"];
+
+const DRILL_CATEGORIES = [
+  { category: "Kitchen / NVZ", drills: ["Dinking (crosscourt)", "Dinking (straight)", "Dink & attack", "Reset"] },
+  { category: "Transition", drills: ["Third shot drop", "Third shot drive", "Fifth shot", "Midcourt reset"] },
+  { category: "Volleys & hands", drills: ["Forehand volley", "Backhand volley", "Two-handed volley", "Speed-up defense", "Hands battle"] },
+  { category: "Movement", drills: ["Footwork & shuffles", "Lob defense", "Overhead smash"] },
+  { category: "Specialty", drills: ["Serve", "Return of serve", "Erne", "ATP (around the post)", "Kill shot"] },
+];
+
+const COLORS = ["#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#BA7517","#639922","#888"];
 
 let current = JSON.parse(localStorage.getItem("pb_current") || "null") || SKILLS.map(s => ({ ...s, level: 5 }));
-let history = [];
-let matches = [];
+let history = [], matches = [], drillSessions = [];
 let chartInst = null;
 
-async function loadFromDB() {
-  const { data: hist } = await db.from("skill_history").select("*").order("created_at");
-  const { data: mats } = await db.from("matches").select("*").order("created_at");
-  if (hist) history = hist.map(h => ({ date: h.date, note: h.note, skills: h.skills }));
-  if (mats) matches = mats.map(m => ({ ...m }));
-  loadFromDB(); renderNotesLog();
-}
-
-function save() {
-  localStorage.setItem("pb_current", JSON.stringify(current));
-}
+function save() { localStorage.setItem("pb_current", JSON.stringify(current)); }
 
 function todayStr() {
   return new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -204,9 +232,23 @@ function switchTab(tab, el) {
   document.getElementById("tab-" + tab).classList.add("active");
   if (tab === "progress") { setTimeout(renderChart, 50); renderStreak(); }
   if (tab === "notes") renderNotesLog();
+  if (tab === "drills") { renderDrillChecklist(); renderDrillStats(); renderDrillHistory(); }
   if (tab === "dashboard") renderDashboard();
 }
 
+async function loadFromDB() {
+  const [{ data: hist }, { data: mats }, { data: drills }] = await Promise.all([
+    db.from("skill_history").select("*").order("created_at"),
+    db.from("matches").select("*").order("created_at"),
+    db.from("drill_sessions").select("*").order("created_at"),
+  ]);
+  if (hist) history = hist.map(h => ({ date: h.date, note: h.note, skills: h.skills }));
+  if (mats) matches = mats;
+  if (drills) drillSessions = drills;
+  renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog();
+}
+
+/* ── SKILLS ── */
 function renderSkills() {
   document.getElementById("skill-list").innerHTML = current.map((s, i) => `
     <div class="skill-row">
@@ -255,11 +297,11 @@ function renderHistory() {
     </div>`).join("");
 }
 
+/* ── MATCHES ── */
 function calcStreak() {
   let cur = 0, best = 0, tmp = 0;
   for (const m of matches) {
-    if (m.result === "win") { tmp++; cur = tmp; best = Math.max(best, tmp); }
-    else tmp = 0;
+    if (m.result === "win") { tmp++; cur = tmp; best = Math.max(best, tmp); } else tmp = 0;
   }
   return { cur, best };
 }
@@ -289,18 +331,7 @@ function renderStats() {
     ${ss ? `
     <div class="stat-card"><div class="stat-label">Avg differential</div><div class="stat-value" style="font-size:18px;">${ss.avgDiff > 0 ? '+' : ''}${ss.avgDiff}</div></div>
     <div class="stat-card"><div class="stat-label">Biggest win</div><div class="stat-value win" style="font-size:18px;">${ss.biggest.my_score}-${ss.biggest.opp_score}</div></div>
-    <div class="stat-card"><div class="stat-label">Biggest loss</div><div class="stat-value loss" style="font-size:18px;">${ss.worst.my_score}-${ss.worst.opp_score}</div></div>
-    ` : ""}`;
-}
-
-function renderStreak() {
-  const wins = matches.filter(m => m.result === "win").length;
-  const losses = matches.filter(m => m.result === "loss").length;
-  const { cur, best } = calcStreak();
-  document.getElementById("streak-grid").innerHTML = `
-    <div class="stat-card"><div class="stat-label">Current streak</div><div class="stat-value streak">${cur}</div></div>
-    <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${best}</div></div>
-    <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${wins+losses}</div></div>`;
+    <div class="stat-card"><div class="stat-label">Biggest loss</div><div class="stat-value loss" style="font-size:18px;">${ss.worst.my_score}-${ss.worst.opp_score}</div></div>` : ""}`;
 }
 
 async function addMatch() {
@@ -330,8 +361,8 @@ async function deleteMatch(id) {
 function renderMatches() {
   const el = document.getElementById("match-log");
   if (!matches.length) { el.innerHTML = '<div class="empty">No matches logged yet.</div>'; return; }
-  el.innerHTML = [...matches].reverse().map((m) => {
-    return `<div class="match-entry">
+  el.innerHTML = [...matches].reverse().map(m => `
+    <div class="match-entry">
       <div class="match-top">
         <span class="badge ${m.result}">${m.result}</span>
         <span class="badge type">${m.type || "doubles"}</span>
@@ -341,12 +372,191 @@ function renderMatches() {
         <button class="delete-btn" onclick="deleteMatch('${m.id}')">×</button>
       </div>
       ${m.notes ? `<div class="match-note-text">${m.notes}</div>` : ""}
-    </div>`;
-  }).join("");
+    </div>`).join("");
 }
 
+/* ── DRILLS ── */
+function renderDrillChecklist() {
+  const el = document.getElementById("drill-checklist");
+  if (!el) return;
+  el.innerHTML = DRILL_CATEGORIES.map(cat => `
+    <div style="margin-bottom:14px;">
+      <div class="section-title">${cat.category}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${cat.drills.map(d => `
+          <label class="drill-label">
+            <input type="checkbox" value="${d}" style="width:13px;height:13px;cursor:pointer;" />
+            ${d}
+          </label>`).join("")}
+      </div>
+    </div>`).join("");
+}
+
+async function logDrillSession() {
+  const checked = [...document.querySelectorAll("#drill-checklist input:checked")].map(c => c.value);
+  if (!checked.length) { alert("Check at least one drill!"); return; }
+  const duration = parseInt(document.getElementById("drill-duration").value) || null;
+  const notes = document.getElementById("drill-notes").value.trim();
+  const entry = { date: todayStr(), drills: checked, duration, notes };
+  const { data } = await db.from("drill_sessions").insert(entry).select();
+  if (data) drillSessions.push(data[0]);
+  document.getElementById("drill-duration").value = "";
+  document.getElementById("drill-notes").value = "";
+  document.querySelectorAll("#drill-checklist input:checked").forEach(c => c.checked = false);
+  renderDrillStats(); renderDrillHistory();
+}
+
+function renderDrillStats() {
+  const el = document.getElementById("drill-stats");
+  if (!el) return;
+  if (!drillSessions.length) { el.innerHTML = '<div class="empty">No drill sessions yet.</div>'; return; }
+  const counts = {};
+  drillSessions.forEach(s => s.drills.forEach(d => counts[d] = (counts[d] || 0) + 1));
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const max = sorted[0][1];
+  el.innerHTML = `
+    <div style="font-size:12px;color:#888;margin-bottom:10px;">${drillSessions.length} total sessions · ${Object.keys(counts).length} drills practiced</div>
+    ${sorted.map(([name, count]) => `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:13px;color:#1a1a1a;min-width:180px;">${name}</span>
+        <div style="flex:1;height:6px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
+          <div style="width:${Math.round((count/max)*100)}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
+        </div>
+        <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${count}x</span>
+      </div>`).join("")}`;
+}
+
+function renderDrillHistory() {
+  const el = document.getElementById("drill-history");
+  if (!el) return;
+  if (!drillSessions.length) { el.innerHTML = '<div class="empty">No sessions logged yet.</div>'; return; }
+  el.innerHTML = [...drillSessions].reverse().map(s => `
+    <div class="history-entry">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span class="history-date">${s.date}</span>
+        ${s.duration ? `<span style="font-size:12px;color:#888;">${s.duration} min</span>` : ""}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;${s.notes ? 'margin-bottom:6px;' : ''}">
+        ${s.drills.map(d => `<span class="skill-pill">${d}</span>`).join("")}
+      </div>
+      ${s.notes ? `<div class="history-note">"${s.notes}"</div>` : ""}
+    </div>`).join("");
+}
+
+/* ── PROGRESS ── */
+function renderStreak() {
+  const wins = matches.filter(m => m.result === "win").length;
+  const losses = matches.filter(m => m.result === "loss").length;
+  const { cur, best } = calcStreak();
+  document.getElementById("streak-grid").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Current streak</div><div class="stat-value streak">${cur}</div></div>
+    <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${best}</div></div>
+    <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${wins+losses}</div></div>`;
+}
+
+function renderChart() {
+  const canvas = document.getElementById("skill-chart");
+  if (!canvas) return;
+  const w = canvas.parentElement.clientWidth || 580;
+  canvas.width = w;
+  const ctx = canvas.getContext("2d");
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  if (history.length < 2) {
+    ctx.fillStyle = "#aaa"; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("Log at least 2 snapshots to see your trend.", w/2, 110);
+    return;
+  }
+  const labels = history.map(h => h.date);
+  const datasets = SKILLS.map((s, i) => ({
+    label: s.name,
+    data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: "transparent",
+    tension: 0.35, pointRadius: 4, borderWidth: 2,
+  }));
+  chartInst = new Chart(ctx, {
+    type: "line", data: { labels, datasets },
+    options: {
+      responsive: false,
+      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        y: { min: 0, max: 10, ticks: { stepSize: 2, color: "#888", font: { size: 12 } }, grid: { color: "rgba(0,0,0,0.06)" } },
+        x: { ticks: { color: "#888", font: { size: 11 }, maxRotation: 30 }, grid: { display: false } }
+      }
+    }
+  });
+  document.getElementById("chart-legend").innerHTML = SKILLS.map((s, i) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${s.name}</div>`
+  ).join("");
+}
+
+/* ── NOTES ── */
+function renderNotesLog() {
+  const el = document.getElementById("notes-log");
+  if (!el) return;
+  const entries = history.filter(h => h.note);
+  if (!entries.length) { el.innerHTML = '<div class="empty">No notes yet. Add one from the Skills tab.</div>'; return; }
+  el.innerHTML = [...entries].reverse().map(h => `
+    <div style="display:flex;gap:16px;padding:0.75rem 0;border-bottom:1px solid #e5e5e5;align-items:flex-start;">
+      <span style="font-size:12px;color:#888;min-width:90px;padding-top:2px;white-space:nowrap;">${h.date}</span>
+      <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${h.note}</span>
+    </div>`).join("");
+}
+
+/* ── DASHBOARD ── */
+function renderDashboard() {
+  const wins = matches.filter(m => m.result === "win").length;
+  const losses = matches.filter(m => m.result === "loss").length;
+  const total = wins + losses;
+  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
+  const { cur } = calcStreak();
+  document.getElementById("dash-stats").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
+    <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
+    <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
+    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
+  document.getElementById("dash-skills").innerHTML = current.map(s => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:12px;color:#555;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</span>
+      <div style="flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
+        <div style="width:${s.level*10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
+      </div>
+      <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${s.level}</span>
+    </div>`).join("");
+  const recent = [...matches].slice(-5).reverse();
+  document.getElementById("dash-matches").innerHTML = recent.length ? recent.map(m => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span class="badge ${m.result}">${m.result}</span>
+      <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
+      <span style="font-size:12px;color:#aaa;">${m.date}</span>
+    </div>`).join("") : '<div class="empty">No matches yet.</div>';
+  const lastNote = [...history].reverse().find(h => h.note);
+  document.getElementById("dash-note").innerHTML = lastNote
+    ? `<div style="display:flex;gap:16px;align-items:flex-start;">
+        <span style="font-size:12px;color:#888;min-width:90px;white-space:nowrap;">${lastNote.date}</span>
+        <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${lastNote.note}</span>
+       </div>`
+    : '<div class="empty">No notes yet.</div>';
+  const strongest = current.reduce((a, b) => a.level >= b.level ? a : b);
+  const mostImproved = (() => {
+    if (history.length < 2) return null;
+    const prev = history[history.length-2].skills;
+    const latest = history[history.length-1].skills;
+    let best = null, bestDelta = 0;
+    for (const s of latest) {
+      const p = prev.find(x => x.key === s.key);
+      if (p && s.level - p.level > bestDelta) { bestDelta = s.level - p.level; best = s; }
+    }
+    return best && bestDelta > 0 ? { name: best.name, delta: bestDelta } : null;
+  })();
+  let insight = `<span style="font-size:13px;color:#555;">Strongest skill: <strong>${strongest.name}</strong> (${strongest.level}/10)</span>`;
+  if (mostImproved) insight += `<span style="font-size:13px;color:#555;margin-left:16px;">Most improved: <strong>${mostImproved.name}</strong> +${mostImproved.delta}</span>`;
+  document.getElementById("dash-insight").innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0.75rem 1rem;background:#f5f5f5;border-radius:8px;">${insight}</div>`;
+}
+
+/* ── EXPORT/IMPORT ── */
 function exportData() {
-  const data = { current, history, matches, exportedAt: new Date().toISOString() };
+  const data = { current, history, matches, drillSessions, exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -366,125 +576,17 @@ function importData(e) {
       if (data.current) current = data.current;
       if (data.history) history = data.history;
       if (data.matches) matches = data.matches;
+      if (data.drillSessions) drillSessions = data.drillSessions;
       save();
-      renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog();
+      renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog(); renderDrillChecklist(); renderDrillStats(); renderDrillHistory();
       alert("Data imported successfully!");
-    } catch {
-      alert("Couldn't read that file. Make sure it's a valid export from this tracker.");
-    }
+    } catch { alert("Couldn't read that file."); }
   };
   reader.readAsText(file);
   e.target.value = "";
 }
 
-function renderDashboard() {
-  const wins = matches.filter(m => m.result === "win").length;
-  const losses = matches.filter(m => m.result === "loss").length;
-  const total = wins + losses;
-  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
-  const { cur } = calcStreak();
-  document.getElementById("dash-stats").innerHTML = `
-    <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
-    <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
-    <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
-    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
-
-  document.getElementById("dash-skills").innerHTML = current.map(s => `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-      <span style="font-size:12px;color:#555;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</span>
-      <div style="flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
-        <div style="width:${s.level*10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
-      </div>
-      <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${s.level}</span>
-    </div>`).join("");
-
-  const recent = [...matches].slice(-5).reverse();
-  document.getElementById("dash-matches").innerHTML = recent.length ? recent.map(m => `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-      <span class="badge ${m.result}">${m.result}</span>
-      <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
-      <span style="font-size:12px;color:#aaa;">${m.date}</span>
-    </div>`).join("") : '<div class="empty">No matches yet.</div>';
-
-  const lastNote = [...history].reverse().find(h => h.note);
-  document.getElementById("dash-note").innerHTML = lastNote
-    ? `<div style="display:flex;gap:16px;align-items:flex-start;">
-        <span style="font-size:12px;color:#888;min-width:90px;white-space:nowrap;">${lastNote.date}</span>
-        <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${lastNote.note}</span>
-       </div>`
-    : '<div class="empty">No notes yet.</div>';
-
-  const strongest = current.reduce((a, b) => a.level >= b.level ? a : b);
-  const mostImproved = (() => {
-    if (history.length < 2) return null;
-    const prev = history[history.length - 2].skills;
-    const latest = history[history.length - 1].skills;
-    let best = null, bestDelta = 0;
-    for (const s of latest) {
-      const p = prev.find(x => x.key === s.key);
-      if (p && s.level - p.level > bestDelta) { bestDelta = s.level - p.level; best = s; }
-    }
-    return best && bestDelta > 0 ? { name: best.name, delta: bestDelta } : null;
-  })();
-
-  let insight = `<span style="font-size:13px;color:#555;">Strongest skill: <strong>${strongest.name}</strong> (${strongest.level}/10)</span>`;
-  if (mostImproved) insight += `<span style="font-size:13px;color:#555;margin-left:16px;">Most improved: <strong>${mostImproved.name}</strong> +${mostImproved.delta}</span>`;
-  document.getElementById("dash-insight").innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0.75rem 1rem;background:#f5f5f5;border-radius:8px;">${insight}</div>`;
-}
-
-function renderNotesLog() {
-  const el = document.getElementById("notes-log");
-  const entries = history.filter(h => h.note);
-  if (!entries.length) { el.innerHTML = '<div class="empty">No notes yet. Add one from the Skills tab.</div>'; return; }
-  el.innerHTML = [...entries].reverse().map(h => `
-    <div style="display:flex;gap:16px;padding:0.75rem 0;border-bottom:1px solid #e5e5e5;align-items:flex-start;">
-      <span style="font-size:12px;color:#888;min-width:90px;padding-top:2px;white-space:nowrap;">${h.date}</span>
-      <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${h.note}</span>
-    </div>`).join("");
-}
-
-function renderChart() {
-  const canvas = document.getElementById("skill-chart");
-  if (!canvas) return;
-  const w = canvas.parentElement.clientWidth || 580;
-  canvas.width = w;
-  const ctx = canvas.getContext("2d");
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  if (history.length < 2) {
-    ctx.fillStyle = "#aaa";
-    ctx.font = "14px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Log at least 2 snapshots to see your trend.", w/2, 110);
-    return;
-  }
-  const labels = history.map(h => h.date);
-  const datasets = SKILLS.map((s, i) => ({
-    label: s.name,
-    data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
-    borderColor: COLORS[i % COLORS.length],
-    backgroundColor: "transparent",
-    tension: 0.35,
-    pointRadius: 4,
-    borderWidth: 2,
-  }));
-  chartInst = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: {
-      responsive: false,
-      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
-      scales: {
-        y: { min: 0, max: 10, ticks: { stepSize: 2, color: "#888", font: { size: 12 } }, grid: { color: "rgba(0,0,0,0.06)" } },
-        x: { ticks: { color: "#888", font: { size: 11 }, maxRotation: 30 }, grid: { display: false } }
-      }
-    }
-  });
-  document.getElementById("chart-legend").innerHTML = SKILLS.map((s, i) =>
-    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${s.name}</div>`
-  ).join("");
-}
-
-renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches();
+loadFromDB();
 </script>
 </body>
 </html>
