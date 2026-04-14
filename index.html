@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pickleball Skill Tracker</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
+.tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e5e5; }
+.tab { font-size: 14px; font-weight: 500; color: #888; background: none; border: none; cursor: pointer; padding: 6px 14px 10px; position: relative; }
+.tab.active { color: #1a1a1a; }
+.tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #1a1a1a; border-radius: 2px 2px 0 0; }
+.panel { display: none; }
+.panel.active { display: block; }
+.section-title { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+.section { margin-bottom: 2rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+.stat-card { background: #f5f5f5; border-radius: 8px; padding: 0.85rem 1rem; }
+.stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 500; color: #1a1a1a; }
+.stat-value.win { color: #2a9d5c; }
+.stat-value.loss { color: #d94f4f; }
+.stat-value.streak { color: #c47a1a; }
+.skill-list { display: flex; flex-direction: column; gap: 10px; }
+.skill-row { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 12px; }
+.skill-name { font-size: 14px; color: #1a1a1a; min-width: 140px; }
+.skill-bar-wrap { flex: 1; height: 6px; background: #f0f0f0; border-radius: 99px; overflow: hidden; }
+.skill-bar { height: 100%; border-radius: 99px; background: #1a1a1a; transition: width 0.3s; }
+.skill-score { font-size: 13px; color: #888; min-width: 28px; text-align: right; }
+.skill-btns { display: flex; gap: 4px; }
+.skill-btn { width: 24px; height: 24px; border: 1px solid #d0d0d0; border-radius: 6px; background: transparent; color: #1a1a1a; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.skill-btn:hover { background: #f5f5f5; }
+.notes-area { width: 100%; min-height: 70px; font-size: 14px; font-family: system-ui, sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 10px; resize: vertical; margin-bottom: 8px; }
+.log-btn { height: 36px; padding: 0 18px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
+.log-btn:hover { background: #f5f5f5; }
+.today-note { font-size: 12px; color: #888; margin-top: 6px; }
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-entry { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 0.75rem 1rem; }
+.history-date { font-size: 12px; color: #888; margin-bottom: 8px; }
+.history-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.skill-pill { font-size: 12px; background: #f5f5f5; border-radius: 99px; padding: 2px 10px; color: #1a1a1a; }
+.history-note { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; }
+.form-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.form-row select, .form-row input { height: 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; }
+.form-row button { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
+.form-row button:hover { background: #f5f5f5; }
+.match-notes-input { width: 100%; height: 36px; font-size: 14px; font-family: system-ui, sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; margin-bottom: 8px; }
+.match-log { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
+.match-entry { font-size: 13px; color: #888; padding: 0.65rem 0.9rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; }
+.match-top { display: flex; align-items: center; gap: 10px; }
+.match-note-text { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; padding-left: 2px; }
+.badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; }
+.badge.win { background: #d4f0e2; color: #1e7a45; }
+.badge.loss { background: #fde8e8; color: #b93333; }
+.badge.type { background: #f0f0f0; color: #666; }
+.score-text { font-weight: 500; color: #1a1a1a; }
+.opponent-text { flex: 1; }
+.delete-btn { background: none; border: none; cursor: pointer; color: #aaa; font-size: 14px; padding: 0 2px; }
+.delete-btn:hover { color: #d94f4f; }
+.empty { font-size: 13px; color: #888; padding: 0.5rem 0; }
+.export-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+.export-btn { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
+.export-btn:hover { background: #f5f5f5; }
+.import-input { display: none; }
+.chart-wrap { width: 100%; overflow-x: auto; }
+canvas { display: block; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<div class="export-bar">
+  <button class="export-btn" onclick="exportData()">Export data</button>
+  <button class="export-btn" onclick="document.getElementById('import-input').click()">Import data</button>
+  <input class="import-input" id="import-input" type="file" accept=".json" onchange="importData(event)" />
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('skills',this)">Skills</button>
+  <button class="tab" onclick="switchTab('matches',this)">Matches</button>
+  <button class="tab" onclick="switchTab('progress',this)">Progress</button>
+</div>
+
+<div id="tab-dashboard" class="panel active">
+  <div class="section">
+    <div class="stats-grid" id="dash-stats"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:2rem;">
+    <div>
+      <div class="section-title">Current skills</div>
+      <div id="dash-skills"></div>
+    </div>
+    <div>
+      <div class="section-title">Recent matches</div>
+      <div id="dash-matches"></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Latest note</div>
+    <div id="dash-note"></div>
+  </div>
+  <div id="dash-insight" style="margin-top:0.5rem;"></div>
+</div>
+
+<div id="tab-skills" class="panel">
+  <div class="section">
+    <div class="section-title">Today's ratings</div>
+    <div class="skill-list" id="skill-list"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Notes for today</div>
+    <textarea class="notes-area" id="day-notes" placeholder="e.g. kept popping up third shot drops, dinking felt sharp..."></textarea>
+    <button class="log-btn" onclick="logDay()">Save today's snapshot</button>
+    <div id="today-note" class="today-note"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">History</div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</div>
+
+<div id="tab-matches" class="panel">
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="section">
+    <div class="section-title">Log a match</div>
+    <div class="form-row">
+      <select id="result-select"><option value="win">Win</option><option value="loss">Loss</option></select>
+      <select id="type-select"><option value="doubles">Doubles</option><option value="singles">Singles</option><option value="drills">Drills</option></select>
+      <input type="text" id="opponent-input" placeholder="Opponent (optional)" style="width:130px;" />
+      <input type="text" id="score-input" placeholder="Score e.g. 11-7" style="width:105px;" />
+    </div>
+    <input class="match-notes-input" type="text" id="match-notes" placeholder="Notes (optional)" />
+    <div class="form-row"><button onclick="addMatch()">+ Add match</button></div>
+  </div>
+  <div class="match-log" id="match-log"></div>
+</div>
+
+<div id="tab-progress" class="panel">
+  <div class="section">
+    <div class="section-title">Skill trends</div>
+    <div class="chart-wrap"><canvas id="skill-chart" height="220"></canvas></div>
+    <div class="chart-legend" id="chart-legend"></div>
+  </div>
+  <div class="section" style="margin-top:1.5rem;">
+    <div class="section-title">Win streak</div>
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);" id="streak-grid"></div>
+  </div>
+</div>
+
+<div id="tab-notes" class="panel">
+  <div class="section">
+    <div class="section-title">Daily notes log</div>
+    <div id="notes-log"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const SKILLS = [
+  { name: "Serve", key: "serve" },
+  { name: "Third shot", key: "third" },
+  { name: "Dinking", key: "dink" },
+  { name: "Volley", key: "volley" },
+  { name: "Two-handed volley", key: "twovolley" },
+  { name: "Footwork", key: "footwork" },
+  { name: "Reset", key: "reset" },
+  { name: "Kill shot", key: "kill" },
+];
+const COLORS = ["#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#BA7517","#639922"];
+
+let current = JSON.parse(localStorage.getItem("pb_current") || "null") || SKILLS.map(s => ({ ...s, level: 5 }));
+let history = JSON.parse(localStorage.getItem("pb_history") || "[]");
+let matches = JSON.parse(localStorage.getItem("pb_matches3") || "[]");
+let chartInst = null;
+
+function save() {
+  localStorage.setItem("pb_current", JSON.stringify(current));
+  localStorage.setItem("pb_history", JSON.stringify(history));
+  localStorage.setItem("pb_matches3", JSON.stringify(matches));
+}
+
+function todayStr() {
+  return new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("tab-" + tab).classList.add("active");
+  if (tab === "progress") { setTimeout(renderChart, 50); renderStreak(); }
+  if (tab === "notes") renderNotesLog();
+  if (tab === "dashboard") renderDashboard();
+}
+
+function renderSkills() {
+  document.getElementById("skill-list").innerHTML = current.map((s, i) => `
+    <div class="skill-row">
+      <span class="skill-name">${s.name}</span>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:${s.level*10}%"></div></div>
+      <span class="skill-score">${s.level}/10</span>
+      <div class="skill-btns">
+        <button class="skill-btn" onclick="changeSkill(${i},-1)">−</button>
+        <button class="skill-btn" onclick="changeSkill(${i},1)">+</button>
+      </div>
+    </div>`).join("");
+  const today = todayStr();
+  const last = history[history.length-1];
+  document.getElementById("today-note").textContent = (last && last.date === today) ? "Snapshot saved for today." : "";
+  if (last && last.date === today && last.note) document.getElementById("day-notes").value = last.note;
+}
+
+function changeSkill(i, delta) {
+  current[i].level = Math.min(10, Math.max(0, current[i].level + delta));
+  save(); renderSkills();
+}
+
+function logDay() {
+  const today = todayStr();
+  const note = document.getElementById("day-notes").value.trim();
+  const snapshot = { date: today, note, skills: current.map(s => ({ key: s.key, name: s.name, level: s.level })) };
+  const last = history[history.length-1];
+  if (last && last.date === today) history[history.length-1] = snapshot;
+  else history.push(snapshot);
+  save(); renderSkills(); renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById("history-list");
+  if (!history.length) { el.innerHTML = '<div class="empty">No snapshots yet.</div>'; return; }
+  el.innerHTML = [...history].reverse().map(h => `
+    <div class="history-entry">
+      <div class="history-date">${h.date}</div>
+      <div class="history-skills">${h.skills.map(s => `<span class="skill-pill">${s.name} <strong>${s.level}</strong></span>`).join("")}</div>
+      ${h.note ? `<div class="history-note">"${h.note}"</div>` : ""}
+    </div>`).join("");
+}
+
+function calcStreak() {
+  let cur = 0, best = 0, tmp = 0;
+  for (const m of matches) {
+    if (m.result === "win") { tmp++; cur = tmp; best = Math.max(best, tmp); }
+    else tmp = 0;
+  }
+  return { cur, best };
+}
+
+function renderStats() {
+  const wins = matches.filter(m => m.result === "win").length;
+  const losses = matches.filter(m => m.result === "loss").length;
+  const total = wins + losses;
+  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
+  const { cur } = calcStreak();
+  document.getElementById("stats-grid").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
+    <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
+    <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
+    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
+}
+
+function renderStreak() {
+  const wins = matches.filter(m => m.result === "win").length;
+  const losses = matches.filter(m => m.result === "loss").length;
+  const { cur, best } = calcStreak();
+  document.getElementById("streak-grid").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Current streak</div><div class="stat-value streak">${cur}</div></div>
+    <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${best}</div></div>
+    <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${wins+losses}</div></div>`;
+}
+
+function addMatch() {
+  const result = document.getElementById("result-select").value;
+  const type = document.getElementById("type-select").value;
+  const opponent = document.getElementById("opponent-input").value.trim();
+  const score = document.getElementById("score-input").value.trim();
+  const notes = document.getElementById("match-notes").value.trim();
+  matches.push({ result, type, opponent, score, notes, date: todayStr() });
+  document.getElementById("opponent-input").value = "";
+  document.getElementById("score-input").value = "";
+  document.getElementById("match-notes").value = "";
+  save(); renderStats(); renderMatches();
+}
+
+function deleteMatch(i) {
+  matches.splice(i, 1);
+  save(); renderStats(); renderMatches();
+}
+
+function renderMatches() {
+  const el = document.getElementById("match-log");
+  if (!matches.length) { el.innerHTML = '<div class="empty">No matches logged yet.</div>'; return; }
+  el.innerHTML = [...matches].reverse().map((m, ri) => {
+    const i = matches.length - 1 - ri;
+    return `<div class="match-entry">
+      <div class="match-top">
+        <span class="badge ${m.result}">${m.result}</span>
+        <span class="badge type">${m.type || "doubles"}</span>
+        <span class="opponent-text">${m.opponent || "—"}</span>
+        <span class="score-text">${m.score || ""}</span>
+        <span style="font-size:12px;color:#aaa;margin-left:auto;padding-left:8px;">${m.date}</span>
+        <button class="delete-btn" onclick="deleteMatch(${i})">×</button>
+      </div>
+      ${m.notes ? `<div class="match-note-text">${m.notes}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function exportData() {
+  const data = { current, history, matches, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `pickleball-data-${new Date().toLocaleDateString("en-US",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-")}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.current) current = data.current;
+      if (data.history) history = data.history;
+      if (data.matches) matches = data.matches;
+      save();
+      renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog();
+      alert("Data imported successfully!");
+    } catch {
+      alert("Couldn't read that file. Make sure it's a valid export from this tracker.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+function renderDashboard() {
+  const wins = matches.filter(m => m.result === "win").length;
+  const losses = matches.filter(m => m.result === "loss").length;
+  const total = wins + losses;
+  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
+  const { cur } = calcStreak();
+  document.getElementById("dash-stats").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
+    <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
+    <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
+    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
+
+  document.getElementById("dash-skills").innerHTML = current.map(s => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:12px;color:#555;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</span>
+      <div style="flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
+        <div style="width:${s.level*10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
+      </div>
+      <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${s.level}</span>
+    </div>`).join("");
+
+  const recent = [...matches].slice(-5).reverse();
+  document.getElementById("dash-matches").innerHTML = recent.length ? recent.map(m => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span class="badge ${m.result}">${m.result}</span>
+      <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
+      <span style="font-size:12px;color:#aaa;">${m.date}</span>
+    </div>`).join("") : '<div class="empty">No matches yet.</div>';
+
+  const lastNote = [...history].reverse().find(h => h.note);
+  document.getElementById("dash-note").innerHTML = lastNote
+    ? `<div style="display:flex;gap:16px;align-items:flex-start;">
+        <span style="font-size:12px;color:#888;min-width:90px;white-space:nowrap;">${lastNote.date}</span>
+        <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${lastNote.note}</span>
+       </div>`
+    : '<div class="empty">No notes yet.</div>';
+
+  const strongest = current.reduce((a, b) => a.level >= b.level ? a : b);
+  const mostImproved = (() => {
+    if (history.length < 2) return null;
+    const prev = history[history.length - 2].skills;
+    const latest = history[history.length - 1].skills;
+    let best = null, bestDelta = 0;
+    for (const s of latest) {
+      const p = prev.find(x => x.key === s.key);
+      if (p && s.level - p.level > bestDelta) { bestDelta = s.level - p.level; best = s; }
+    }
+    return best && bestDelta > 0 ? { name: best.name, delta: bestDelta } : null;
+  })();
+
+  let insight = `<span style="font-size:13px;color:#555;">Strongest skill: <strong>${strongest.name}</strong> (${strongest.level}/10)</span>`;
+  if (mostImproved) insight += `<span style="font-size:13px;color:#555;margin-left:16px;">Most improved: <strong>${mostImproved.name}</strong> +${mostImproved.delta}</span>`;
+  document.getElementById("dash-insight").innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0.75rem 1rem;background:#f5f5f5;border-radius:8px;">${insight}</div>`;
+}
+
+function renderNotesLog() {
+  const el = document.getElementById("notes-log");
+  const entries = history.filter(h => h.note);
+  if (!entries.length) { el.innerHTML = '<div class="empty">No notes yet. Add one from the Skills tab.</div>'; return; }
+  el.innerHTML = [...entries].reverse().map(h => `
+    <div style="display:flex;gap:16px;padding:0.75rem 0;border-bottom:1px solid #e5e5e5;align-items:flex-start;">
+      <span style="font-size:12px;color:#888;min-width:90px;padding-top:2px;white-space:nowrap;">${h.date}</span>
+      <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${h.note}</span>
+    </div>`).join("");
+}
+
+function renderChart() {
+  const canvas = document.getElementById("skill-chart");
+  if (!canvas) return;
+  const w = canvas.parentElement.clientWidth || 580;
+  canvas.width = w;
+  const ctx = canvas.getContext("2d");
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  if (history.length < 2) {
+    ctx.fillStyle = "#aaa";
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Log at least 2 snapshots to see your trend.", w/2, 110);
+    return;
+  }
+  const labels = history.map(h => h.date);
+  const datasets = SKILLS.map((s, i) => ({
+    label: s.name,
+    data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: "transparent",
+    tension: 0.35,
+    pointRadius: 4,
+    borderWidth: 2,
+  }));
+  chartInst = new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets },
+    options: {
+      responsive: false,
+      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        y: { min: 0, max: 10, ticks: { stepSize: 2, color: "#888", font: { size: 12 } }, grid: { color: "rgba(0,0,0,0.06)" } },
+        x: { ticks: { color: "#888", font: { size: 11 }, maxRotation: 30 }, grid: { display: false } }
+      }
+    }
+  });
+  document.getElementById("chart-legend").innerHTML = SKILLS.map((s, i) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${s.name}</div>`
+  ).join("");
+}
+
+renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches();
+</script>
+</body>
+</html>
