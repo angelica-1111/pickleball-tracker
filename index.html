@@ -129,10 +129,10 @@ canvas { display: block; }
   <div class="section">
     <div class="section-title">Log a match</div>
     <div class="form-row">
-      <select id="result-select"><option value="win">Win</option><option value="loss">Loss</option></select>
       <select id="type-select"><option value="doubles">Doubles</option><option value="singles">Singles</option><option value="drills">Drills</option></select>
+      <input type="number" id="my-score" placeholder="Your score" min="0" style="width:110px;" />
+      <input type="number" id="opp-score" placeholder="Their score" min="0" style="width:110px;" />
       <input type="text" id="opponent-input" placeholder="Opponent (optional)" style="width:130px;" />
-      <input type="text" id="score-input" placeholder="Score e.g. 11-7" style="width:105px;" />
     </div>
     <input class="match-notes-input" type="text" id="match-notes" placeholder="Notes (optional)" />
     <div class="form-row"><button onclick="addMatch()">+ Add match</button></div>
@@ -264,17 +264,33 @@ function calcStreak() {
   return { cur, best };
 }
 
+function calcScoreStats() {
+  const scored = matches.filter(m => m.my_score != null && m.opp_score != null);
+  if (!scored.length) return null;
+  const diffs = scored.map(m => m.my_score - m.opp_score);
+  const avgDiff = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(1);
+  const biggest = scored.reduce((a, b) => (b.my_score - b.opp_score) > (a.my_score - a.opp_score) ? b : a);
+  const worst = scored.reduce((a, b) => (b.my_score - b.opp_score) < (a.my_score - a.opp_score) ? b : a);
+  return { avgDiff, biggest, worst };
+}
+
 function renderStats() {
   const wins = matches.filter(m => m.result === "win").length;
   const losses = matches.filter(m => m.result === "loss").length;
   const total = wins + losses;
   const pct = total > 0 ? Math.round((wins/total)*100) : 0;
   const { cur } = calcStreak();
+  const ss = calcScoreStats();
   document.getElementById("stats-grid").innerHTML = `
     <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
     <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
     <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
-    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
+    <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>
+    ${ss ? `
+    <div class="stat-card"><div class="stat-label">Avg differential</div><div class="stat-value" style="font-size:18px;">${ss.avgDiff > 0 ? '+' : ''}${ss.avgDiff}</div></div>
+    <div class="stat-card"><div class="stat-label">Biggest win</div><div class="stat-value win" style="font-size:18px;">${ss.biggest.my_score}-${ss.biggest.opp_score}</div></div>
+    <div class="stat-card"><div class="stat-label">Biggest loss</div><div class="stat-value loss" style="font-size:18px;">${ss.worst.my_score}-${ss.worst.opp_score}</div></div>
+    ` : ""}`;
 }
 
 function renderStreak() {
@@ -288,16 +304,19 @@ function renderStreak() {
 }
 
 async function addMatch() {
-  const result = document.getElementById("result-select").value;
+  const myScore = parseInt(document.getElementById("my-score").value);
+  const oppScore = parseInt(document.getElementById("opp-score").value);
   const type = document.getElementById("type-select").value;
   const opponent = document.getElementById("opponent-input").value.trim();
-  const score = document.getElementById("score-input").value.trim();
   const notes = document.getElementById("match-notes").value.trim();
-  const entry = { result, type, opponent, score, notes, date: todayStr() };
+  if (isNaN(myScore) || isNaN(oppScore)) { alert("Please enter both scores!"); return; }
+  const result = myScore > oppScore ? "win" : "loss";
+  const entry = { result, type, opponent, my_score: myScore, opp_score: oppScore, notes, date: todayStr() };
   const { data } = await db.from("matches").insert(entry).select();
   if (data) matches.push(data[0]);
+  document.getElementById("my-score").value = "";
+  document.getElementById("opp-score").value = "";
   document.getElementById("opponent-input").value = "";
-  document.getElementById("score-input").value = "";
   document.getElementById("match-notes").value = "";
   renderStats(); renderMatches();
 }
@@ -317,7 +336,7 @@ function renderMatches() {
         <span class="badge ${m.result}">${m.result}</span>
         <span class="badge type">${m.type || "doubles"}</span>
         <span class="opponent-text">${m.opponent || "—"}</span>
-        <span class="score-text">${m.score || ""}</span>
+        <span class="score-text">${m.my_score != null ? `${m.my_score}–${m.opp_score}` : ""}</span>
         <span style="font-size:12px;color:#aaa;margin-left:auto;padding-left:8px;">${m.date}</span>
         <button class="delete-btn" onclick="deleteMatch('${m.id}')">×</button>
       </div>
