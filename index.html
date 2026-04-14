@@ -34,24 +34,22 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .skill-btn { width: 24px; height: 24px; border: 1px solid #d0d0d0; border-radius: 6px; background: transparent; color: #1a1a1a; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .skill-btn:hover { background: #f5f5f5; }
 .notes-area { width: 100%; min-height: 70px; font-size: 14px; font-family: system-ui,sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 10px; resize: vertical; margin-bottom: 8px; }
-.log-btn { height: 36px; padding: 0 18px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
-.log-btn:hover { background: #f5f5f5; }
+.log-btn { height: 36px; padding: 0 18px; font-size: 14px; border-radius: 8px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; cursor: pointer; }
+.log-btn:hover { background: #333; border-color: #333; }
 .today-note { font-size: 12px; color: #888; margin-top: 6px; }
-.history-list { display: flex; flex-direction: column; gap: 8px; }
-.history-entry { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 0.75rem 1rem; }
+.history-entry { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 8px; }
 .history-date { font-size: 12px; color: #888; margin-bottom: 8px; }
-.history-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
-.skill-pill { font-size: 12px; background: #f5f5f5; border-radius: 99px; padding: 2px 10px; color: #1a1a1a; }
+.skill-pill { font-size: 12px; background: #f5f5f5; border-radius: 99px; padding: 2px 10px; color: #1a1a1a; display: inline-block; margin: 2px; }
 .history-note { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; }
 .form-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
 .form-row select, .form-row input { height: 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; }
-.form-row button { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
-.form-row button:hover { background: #f5f5f5; }
+.form-row button { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; cursor: pointer; }
+.form-row button:hover { background: #333; border-color: #333; }
 .match-notes-input { width: 100%; height: 36px; font-size: 14px; font-family: system-ui,sans-serif; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; margin-bottom: 8px; }
 .match-log { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
 .match-entry { font-size: 13px; color: #888; padding: 0.65rem 0.9rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; }
-.match-top { display: flex; align-items: center; gap: 10px; }
-.match-note-text { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; padding-left: 2px; }
+.match-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.match-note-text { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; }
 .badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; }
 .badge.win { background: #d4f0e2; color: #1e7a45; }
 .badge.loss { background: #fde8e8; color: #b93333; }
@@ -64,12 +62,12 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .export-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
 .export-btn { height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
 .export-btn:hover { background: #f5f5f5; }
-.import-input { display: none; }
-.chart-wrap { width: 100%; overflow-x: auto; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-.drill-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a1a; cursor: pointer; background: #f5f5f5; padding: 5px 12px; border-radius: 99px; border: 1px solid #e5e5e5; }
+.filter-pill { height: 32px; padding: 0 14px; font-size: 13px; border-radius: 99px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
+.filter-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; font-weight: 500; }
+.drill-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a1a; cursor: pointer; background: #f5f5f5; padding: 5px 12px; border-radius: 99px; border: 1px solid #e5e5e5; margin: 3px; }
 </style>
 </head>
 <body>
@@ -77,37 +75,27 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 <div class="export-bar">
   <button class="export-btn" onclick="exportData()">Export data</button>
   <button class="export-btn" onclick="document.getElementById('import-input').click()">Import data</button>
-  <input class="import-input" id="import-input" type="file" accept=".json" onchange="importData(event)" />
+  <input id="import-input" type="file" accept=".json" style="display:none" onchange="importData(event)" />
 </div>
 
 <div class="tabs">
-  <button class="tab active" id="tab-btn-dashboard" onclick="switchTab('dashboard', this)">Dashboard</button>
-  <button class="tab" id="tab-btn-skills" onclick="switchTab('skills', this)">Skills</button>
-  <button class="tab" id="tab-btn-matches" onclick="switchTab('matches', this)">Matches</button>
-  <button class="tab" id="tab-btn-drills" onclick="switchTab('drills', this)">Drills</button>
-  <button class="tab" id="tab-btn-progress" onclick="switchTab('progress', this)">Progress</button>
-  <button class="tab" id="tab-btn-notes" onclick="switchTab('notes', this)">Notes</button>
+  <button class="tab active" onclick="switchTab('dashboard',this)">Dashboard</button>
+  <button class="tab" onclick="switchTab('skills',this)">Skills</button>
+  <button class="tab" onclick="switchTab('matches',this)">Matches</button>
+  <button class="tab" onclick="switchTab('drills',this)">Drills</button>
+  <button class="tab" onclick="switchTab('progress',this)">Progress</button>
+  <button class="tab" onclick="switchTab('notes',this)">Notes</button>
 </div>
 
 <!-- DASHBOARD -->
 <div id="tab-dashboard" class="panel active">
-  <div class="section">
-    <div class="stats-grid" id="dash-stats"></div>
-  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;" id="dash-filters"></div>
+  <div class="section"><div class="stats-grid" id="dash-stats"></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:2rem;">
-    <div>
-      <div class="section-title">Current skills</div>
-      <div id="dash-skills"></div>
-    </div>
-    <div>
-      <div class="section-title">Recent matches</div>
-      <div id="dash-matches"></div>
-    </div>
+    <div><div class="section-title">Current skills</div><div id="dash-skills"></div></div>
+    <div><div class="section-title">Recent matches</div><div id="dash-matches"></div></div>
   </div>
-  <div class="section">
-    <div class="section-title">Latest note</div>
-    <div id="dash-note"></div>
-  </div>
+  <div class="section"><div class="section-title">Latest note</div><div id="dash-note"></div></div>
   <div id="dash-insight" style="margin-top:0.5rem;"></div>
 </div>
 
@@ -125,7 +113,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
   </div>
   <div class="section">
     <div class="section-title">History</div>
-    <div class="history-list" id="history-list"></div>
+    <div id="history-list"></div>
   </div>
 </div>
 
@@ -158,21 +146,15 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
       <button onclick="logDrillSession()">+ Log session</button>
     </div>
   </div>
-  <div class="section">
-    <div class="section-title">Drill stats</div>
-    <div id="drill-stats"></div>
-  </div>
-  <div class="section">
-    <div class="section-title">Session history</div>
-    <div id="drill-history"></div>
-  </div>
+  <div class="section"><div class="section-title">Drill stats</div><div id="drill-stats"></div></div>
+  <div class="section"><div class="section-title">Session history</div><div id="drill-history"></div></div>
 </div>
 
 <!-- PROGRESS -->
 <div id="tab-progress" class="panel">
   <div class="section">
     <div class="section-title">Skill trends</div>
-    <div class="chart-wrap"><canvas id="skill-chart" height="220"></canvas></div>
+    <div style="width:100%;overflow-x:auto;"><canvas id="skill-chart" height="220"></canvas></div>
     <div class="chart-legend" id="chart-legend"></div>
   </div>
   <div class="section" style="margin-top:1.5rem;">
@@ -183,10 +165,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 
 <!-- NOTES -->
 <div id="tab-notes" class="panel">
-  <div class="section">
-    <div class="section-title">Daily notes log</div>
-    <div id="notes-log"></div>
-  </div>
+  <div class="section"><div class="section-title">Daily notes log</div><div id="notes-log"></div></div>
 </div>
 
 <script>
@@ -214,15 +193,42 @@ const DRILL_CATEGORIES = [
 ];
 
 const COLORS = ["#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#BA7517","#639922","#888"];
+const DASH_FILTERS = [
+  { label: "All time", days: null },
+  { label: "P30D", days: 30 },
+  { label: "P7D", days: 7 },
+  { label: "Today", days: 0 },
+];
+let customDateFrom = null, customDateTo = null;
 
 let current = JSON.parse(localStorage.getItem("pb_current") || "null") || SKILLS.map(s => ({ ...s, level: 5 }));
 let history = [], matches = [], drillSessions = [];
 let chartInst = null;
+let activeDashFilter = null;
 
 function save() { localStorage.setItem("pb_current", JSON.stringify(current)); }
 
 function todayStr() {
   return new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function filterByDays(arr, days) {
+  if (customDateFrom && customDateTo) {
+    const from = new Date(customDateFrom);
+    const to = new Date(customDateTo);
+    to.setHours(23, 59, 59);
+    return arr.filter(item => {
+      const d = new Date(item.date);
+      return d >= from && d <= to;
+    });
+  }
+  if (days === null) return arr;
+  const now = new Date();
+  return arr.filter(item => {
+    if (days === 0) return item.date === todayStr();
+    const d = new Date(item.date);
+    return (now - d) / (1000 * 60 * 60 * 24) <= days;
+  });
 }
 
 function switchTab(tab, el) {
@@ -245,7 +251,11 @@ async function loadFromDB() {
   if (hist) history = hist.map(h => ({ date: h.date, note: h.note, skills: h.skills }));
   if (mats) matches = mats;
   if (drills) drillSessions = drills;
-  renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog();
+  renderDashboard();
+  renderSkills();
+  renderHistory();
+  renderStats();
+  renderMatches();
 }
 
 /* ── SKILLS ── */
@@ -261,7 +271,7 @@ function renderSkills() {
       </div>
     </div>`).join("");
   const today = todayStr();
-  const last = history[history.length-1];
+  const last = history[history.length - 1];
   document.getElementById("today-note").textContent = (last && last.date === today) ? "Snapshot saved for today." : "";
   if (last && last.date === today && last.note) document.getElementById("day-notes").value = last.note;
 }
@@ -292,44 +302,47 @@ function renderHistory() {
   el.innerHTML = [...history].reverse().map(h => `
     <div class="history-entry">
       <div class="history-date">${h.date}</div>
-      <div class="history-skills">${h.skills.map(s => `<span class="skill-pill">${s.name} <strong>${s.level}</strong></span>`).join("")}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:${h.note ? '6px' : '0'};">
+        ${h.skills.map(s => `<span class="skill-pill">${s.name} <strong>${s.level}</strong></span>`).join("")}
+      </div>
       ${h.note ? `<div class="history-note">"${h.note}"</div>` : ""}
     </div>`).join("");
 }
 
 /* ── MATCHES ── */
-function calcStreak() {
+function calcStreak(arr) {
+  arr = arr || matches;
   let cur = 0, best = 0, tmp = 0;
-  for (const m of matches) {
+  for (const m of arr) {
     if (m.result === "win") { tmp++; cur = tmp; best = Math.max(best, tmp); } else tmp = 0;
   }
   return { cur, best };
 }
 
-function calcScoreStats() {
-  const scored = matches.filter(m => m.my_score != null && m.opp_score != null);
+function calcScoreStats(arr) {
+  arr = arr || matches;
+  const scored = arr.filter(m => m.my_score != null && m.opp_score != null);
   if (!scored.length) return null;
   const diffs = scored.map(m => m.my_score - m.opp_score);
-  const avgDiff = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(1);
+  const avg = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(1);
   const biggest = scored.reduce((a, b) => (b.my_score - b.opp_score) > (a.my_score - a.opp_score) ? b : a);
   const worst = scored.reduce((a, b) => (b.my_score - b.opp_score) < (a.my_score - a.opp_score) ? b : a);
-  return { avgDiff, biggest, worst };
+  return { avg, biggest, worst };
 }
 
 function renderStats() {
   const wins = matches.filter(m => m.result === "win").length;
   const losses = matches.filter(m => m.result === "loss").length;
-  const total = wins + losses;
-  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
-  const { cur } = calcStreak();
-  const ss = calcScoreStats();
+  const pct = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+  const { cur } = calcStreak(matches);
+  const ss = calcScoreStats(matches);
   document.getElementById("stats-grid").innerHTML = `
     <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
     <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
     <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
     <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>
     ${ss ? `
-    <div class="stat-card"><div class="stat-label">Avg differential</div><div class="stat-value" style="font-size:18px;">${ss.avgDiff > 0 ? '+' : ''}${ss.avgDiff}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg differential</div><div class="stat-value" style="font-size:18px;">${ss.avg > 0 ? '+' : ''}${ss.avg}</div></div>
     <div class="stat-card"><div class="stat-label">Biggest win</div><div class="stat-value win" style="font-size:18px;">${ss.biggest.my_score}-${ss.biggest.opp_score}</div></div>
     <div class="stat-card"><div class="stat-label">Biggest loss</div><div class="stat-value loss" style="font-size:18px;">${ss.worst.my_score}-${ss.worst.opp_score}</div></div>` : ""}`;
 }
@@ -367,11 +380,11 @@ function renderMatches() {
         <span class="badge ${m.result}">${m.result}</span>
         <span class="badge type">${m.type || "doubles"}</span>
         <span class="opponent-text">${m.opponent || "—"}</span>
-        <span class="score-text">${m.my_score != null ? `${m.my_score}–${m.opp_score}` : ""}</span>
+        <span class="score-text">${m.my_score != null ? m.my_score + "–" + m.opp_score : ""}</span>
         <span style="font-size:12px;color:#aaa;margin-left:auto;padding-left:8px;">${m.date}</span>
         <button class="delete-btn" onclick="deleteMatch('${m.id}')">×</button>
       </div>
-      ${m.notes ? `<div class="match-note-text">${m.notes}</div>` : ""}
+      ${m.notes ? '<div class="match-note-text">' + m.notes + '</div>' : ""}
     </div>`).join("");
 }
 
@@ -382,12 +395,8 @@ function renderDrillChecklist() {
   el.innerHTML = DRILL_CATEGORIES.map(cat => `
     <div style="margin-bottom:14px;">
       <div class="section-title">${cat.category}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        ${cat.drills.map(d => `
-          <label class="drill-label">
-            <input type="checkbox" value="${d}" style="width:13px;height:13px;cursor:pointer;" />
-            ${d}
-          </label>`).join("")}
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">
+        ${cat.drills.map(d => `<label class="drill-label"><input type="checkbox" value="${d}" style="width:13px;height:13px;cursor:pointer;" /> ${d}</label>`).join("")}
       </div>
     </div>`).join("");
 }
@@ -414,16 +423,15 @@ function renderDrillStats() {
   drillSessions.forEach(s => s.drills.forEach(d => counts[d] = (counts[d] || 0) + 1));
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   const max = sorted[0][1];
-  el.innerHTML = `
-    <div style="font-size:12px;color:#888;margin-bottom:10px;">${drillSessions.length} total sessions · ${Object.keys(counts).length} drills practiced</div>
-    ${sorted.map(([name, count]) => `
+  el.innerHTML = `<div style="font-size:12px;color:#888;margin-bottom:10px;">${drillSessions.length} sessions · ${Object.keys(counts).length} drills practiced</div>` +
+    sorted.map(([name, count]) => `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="font-size:13px;color:#1a1a1a;min-width:180px;">${name}</span>
         <div style="flex:1;height:6px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
           <div style="width:${Math.round((count/max)*100)}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
         </div>
         <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${count}x</span>
-      </div>`).join("")}`;
+      </div>`).join("");
 }
 
 function renderDrillHistory() {
@@ -434,24 +442,22 @@ function renderDrillHistory() {
     <div class="history-entry">
       <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
         <span class="history-date">${s.date}</span>
-        ${s.duration ? `<span style="font-size:12px;color:#888;">${s.duration} min</span>` : ""}
+        ${s.duration ? '<span style="font-size:12px;color:#888;">' + s.duration + ' min</span>' : ""}
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;${s.notes ? 'margin-bottom:6px;' : ''}">
-        ${s.drills.map(d => `<span class="skill-pill">${d}</span>`).join("")}
+      <div style="display:flex;flex-wrap:wrap;gap:4px;${s.notes ? 'margin-bottom:6px;' : ''}">
+        ${s.drills.map(d => '<span class="skill-pill">' + d + '</span>').join("")}
       </div>
-      ${s.notes ? `<div class="history-note">"${s.notes}"</div>` : ""}
+      ${s.notes ? '<div class="history-note">"' + s.notes + '"</div>' : ""}
     </div>`).join("");
 }
 
 /* ── PROGRESS ── */
 function renderStreak() {
-  const wins = matches.filter(m => m.result === "win").length;
-  const losses = matches.filter(m => m.result === "loss").length;
-  const { cur, best } = calcStreak();
+  const { cur, best } = calcStreak(matches);
   document.getElementById("streak-grid").innerHTML = `
     <div class="stat-card"><div class="stat-label">Current streak</div><div class="stat-value streak">${cur}</div></div>
     <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${best}</div></div>
-    <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${wins+losses}</div></div>`;
+    <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${matches.length}</div></div>`;
 }
 
 function renderChart() {
@@ -463,19 +469,21 @@ function renderChart() {
   if (chartInst) { chartInst.destroy(); chartInst = null; }
   if (history.length < 2) {
     ctx.fillStyle = "#aaa"; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("Log at least 2 snapshots to see your trend.", w/2, 110);
+    ctx.fillText("Log at least 2 snapshots to see your trend.", w / 2, 110);
     return;
   }
-  const labels = history.map(h => h.date);
-  const datasets = SKILLS.map((s, i) => ({
-    label: s.name,
-    data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
-    borderColor: COLORS[i % COLORS.length],
-    backgroundColor: "transparent",
-    tension: 0.35, pointRadius: 4, borderWidth: 2,
-  }));
   chartInst = new Chart(ctx, {
-    type: "line", data: { labels, datasets },
+    type: "line",
+    data: {
+      labels: history.map(h => h.date),
+      datasets: SKILLS.map((s, i) => ({
+        label: s.name,
+        data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
+        borderColor: COLORS[i % COLORS.length],
+        backgroundColor: "transparent",
+        tension: 0.35, pointRadius: 4, borderWidth: 2,
+      }))
+    },
     options: {
       responsive: false,
       plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
@@ -486,7 +494,7 @@ function renderChart() {
     }
   });
   document.getElementById("chart-legend").innerHTML = SKILLS.map((s, i) =>
-    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${s.name}</div>`
+    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></div>${s.name}</div>`
   ).join("");
 }
 
@@ -504,44 +512,84 @@ function renderNotesLog() {
 }
 
 /* ── DASHBOARD ── */
+function setDashFilter(days) {
+  activeDashFilter = days;
+  customDateFrom = null;
+  customDateTo = null;
+  renderDashboard();
+}
+
+function applyCustomRange() {
+  const from = document.getElementById("custom-from").value;
+  const to = document.getElementById("custom-to").value;
+  if (!from || !to) { alert("Pick both a start and end date!"); return; }
+  customDateFrom = from;
+  customDateTo = to;
+  activeDashFilter = "custom";
+  renderDashboard();
+}
+
 function renderDashboard() {
-  const wins = matches.filter(m => m.result === "win").length;
-  const losses = matches.filter(m => m.result === "loss").length;
-  const total = wins + losses;
-  const pct = total > 0 ? Math.round((wins/total)*100) : 0;
-  const { cur } = calcStreak();
+  const el = document.getElementById("dash-filters");
+  if (el) {
+    const isCustom = activeDashFilter === "custom";
+    el.innerHTML = DASH_FILTERS.map(f =>
+      `<button class="filter-pill ${activeDashFilter === f.days ? 'active' : ''}" onclick="setDashFilter(${f.days === null ? 'null' : f.days})">${f.label}</button>`
+    ).join("") + `
+    <button class="filter-pill ${isCustom ? 'active' : ''}" onclick="document.getElementById('custom-range').style.display = document.getElementById('custom-range').style.display === 'none' ? 'flex' : 'none'">Custom</button>
+    <div id="custom-range" style="display:${isCustom ? 'flex' : 'none'};gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-top:6px;">
+      <input type="date" id="custom-from" value="${customDateFrom || ''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
+      <span style="font-size:13px;color:#888;">to</span>
+      <input type="date" id="custom-to" value="${customDateTo || ''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
+      <button class="filter-pill" onclick="applyCustomRange()" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a;">Apply</button>
+    </div>`;
+  }
+
+  const fm = filterByDays(matches, activeDashFilter);
+  const fh = filterByDays(history, activeDashFilter);
+  const wins = fm.filter(m => m.result === "win").length;
+  const losses = fm.filter(m => m.result === "loss").length;
+  const pct = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+  const { cur } = calcStreak(fm);
+
   document.getElementById("dash-stats").innerHTML = `
     <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
     <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
     <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
     <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
+
   document.getElementById("dash-skills").innerHTML = current.map(s => `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
       <span style="font-size:12px;color:#555;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</span>
       <div style="flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
-        <div style="width:${s.level*10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
+        <div style="width:${s.level * 10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
       </div>
       <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${s.level}</span>
     </div>`).join("");
-  const recent = [...matches].slice(-5).reverse();
-  document.getElementById("dash-matches").innerHTML = recent.length ? recent.map(m => `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-      <span class="badge ${m.result}">${m.result}</span>
-      <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
-      <span style="font-size:12px;color:#aaa;">${m.date}</span>
-    </div>`).join("") : '<div class="empty">No matches yet.</div>';
-  const lastNote = [...history].reverse().find(h => h.note);
+
+  const recent = [...fm].slice(-5).reverse();
+  document.getElementById("dash-matches").innerHTML = recent.length
+    ? recent.map(m => `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="badge ${m.result}">${m.result}</span>
+          <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
+          <span style="font-size:12px;color:#aaa;">${m.date}</span>
+        </div>`).join("")
+    : '<div class="empty">No matches yet.</div>';
+
+  const lastNote = [...fh].reverse().find(h => h.note);
   document.getElementById("dash-note").innerHTML = lastNote
     ? `<div style="display:flex;gap:16px;align-items:flex-start;">
         <span style="font-size:12px;color:#888;min-width:90px;white-space:nowrap;">${lastNote.date}</span>
         <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${lastNote.note}</span>
        </div>`
     : '<div class="empty">No notes yet.</div>';
+
   const strongest = current.reduce((a, b) => a.level >= b.level ? a : b);
   const mostImproved = (() => {
-    if (history.length < 2) return null;
-    const prev = history[history.length-2].skills;
-    const latest = history[history.length-1].skills;
+    if (fh.length < 2) return null;
+    const prev = fh[fh.length - 2].skills;
+    const latest = fh[fh.length - 1].skills;
     let best = null, bestDelta = 0;
     for (const s of latest) {
       const p = prev.find(x => x.key === s.key);
@@ -549,19 +597,20 @@ function renderDashboard() {
     }
     return best && bestDelta > 0 ? { name: best.name, delta: bestDelta } : null;
   })();
+
   let insight = `<span style="font-size:13px;color:#555;">Strongest skill: <strong>${strongest.name}</strong> (${strongest.level}/10)</span>`;
   if (mostImproved) insight += `<span style="font-size:13px;color:#555;margin-left:16px;">Most improved: <strong>${mostImproved.name}</strong> +${mostImproved.delta}</span>`;
   document.getElementById("dash-insight").innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0.75rem 1rem;background:#f5f5f5;border-radius:8px;">${insight}</div>`;
 }
 
-/* ── EXPORT/IMPORT ── */
+/* ── EXPORT / IMPORT ── */
 function exportData() {
   const data = { current, history, matches, drillSessions, exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `pickleball-data-${new Date().toLocaleDateString("en-US",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-")}.json`;
+  a.download = "pickleball-data.json";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -578,8 +627,8 @@ function importData(e) {
       if (data.matches) matches = data.matches;
       if (data.drillSessions) drillSessions = data.drillSessions;
       save();
-      renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches(); renderNotesLog(); renderDrillChecklist(); renderDrillStats(); renderDrillHistory();
-      alert("Data imported successfully!");
+      renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches();
+      alert("Imported!");
     } catch { alert("Couldn't read that file."); }
   };
   reader.readAsText(file);
