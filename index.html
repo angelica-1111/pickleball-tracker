@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Pickleball Skill Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
@@ -157,8 +159,11 @@ canvas { display: block; }
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+const SUPABASE_URL = "https://ykzaebxwwvzkudcbovzw.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_twTT27E2eXoI5eEDNmRZ3A_XGZQkWkr";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const SKILLS = [
   { name: "Serve", key: "serve" },
   { name: "Third shot", key: "third" },
@@ -172,14 +177,20 @@ const SKILLS = [
 const COLORS = ["#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#BA7517","#639922"];
 
 let current = JSON.parse(localStorage.getItem("pb_current") || "null") || SKILLS.map(s => ({ ...s, level: 5 }));
-let history = JSON.parse(localStorage.getItem("pb_history") || "[]");
-let matches = JSON.parse(localStorage.getItem("pb_matches3") || "[]");
+let history = [];
+let matches = [];
 let chartInst = null;
+
+async function loadFromDB() {
+  const { data: hist } = await db.from("skill_history").select("*").order("created_at");
+  const { data: mats } = await db.from("matches").select("*").order("created_at");
+  if (hist) history = hist.map(h => ({ date: h.date, note: h.note, skills: h.skills }));
+  if (mats) matches = mats.map(m => ({ ...m }));
+  loadFromDB(); renderNotesLog();
+}
 
 function save() {
   localStorage.setItem("pb_current", JSON.stringify(current));
-  localStorage.setItem("pb_history", JSON.stringify(history));
-  localStorage.setItem("pb_matches3", JSON.stringify(matches));
 }
 
 function todayStr() {
@@ -218,13 +229,18 @@ function changeSkill(i, delta) {
   save(); renderSkills();
 }
 
-function logDay() {
+async function logDay() {
   const today = todayStr();
   const note = document.getElementById("day-notes").value.trim();
   const snapshot = { date: today, note, skills: current.map(s => ({ key: s.key, name: s.name, level: s.level })) };
-  const last = history[history.length-1];
-  if (last && last.date === today) history[history.length-1] = snapshot;
-  else history.push(snapshot);
+  const existing = history.find(h => h.date === today);
+  if (existing) {
+    await db.from("skill_history").update({ note, skills: snapshot.skills }).eq("date", today);
+    Object.assign(existing, snapshot);
+  } else {
+    await db.from("skill_history").insert(snapshot);
+    history.push(snapshot);
+  }
   save(); renderSkills(); renderHistory();
 }
 
@@ -271,29 +287,31 @@ function renderStreak() {
     <div class="stat-card"><div class="stat-label">Total matches</div><div class="stat-value">${wins+losses}</div></div>`;
 }
 
-function addMatch() {
+async function addMatch() {
   const result = document.getElementById("result-select").value;
   const type = document.getElementById("type-select").value;
   const opponent = document.getElementById("opponent-input").value.trim();
   const score = document.getElementById("score-input").value.trim();
   const notes = document.getElementById("match-notes").value.trim();
-  matches.push({ result, type, opponent, score, notes, date: todayStr() });
+  const entry = { result, type, opponent, score, notes, date: todayStr() };
+  const { data } = await db.from("matches").insert(entry).select();
+  if (data) matches.push(data[0]);
   document.getElementById("opponent-input").value = "";
   document.getElementById("score-input").value = "";
   document.getElementById("match-notes").value = "";
-  save(); renderStats(); renderMatches();
+  renderStats(); renderMatches();
 }
 
-function deleteMatch(i) {
-  matches.splice(i, 1);
-  save(); renderStats(); renderMatches();
+async function deleteMatch(id) {
+  await db.from("matches").delete().eq("id", id);
+  matches = matches.filter(m => m.id !== id);
+  renderStats(); renderMatches();
 }
 
 function renderMatches() {
   const el = document.getElementById("match-log");
   if (!matches.length) { el.innerHTML = '<div class="empty">No matches logged yet.</div>'; return; }
-  el.innerHTML = [...matches].reverse().map((m, ri) => {
-    const i = matches.length - 1 - ri;
+  el.innerHTML = [...matches].reverse().map((m) => {
     return `<div class="match-entry">
       <div class="match-top">
         <span class="badge ${m.result}">${m.result}</span>
@@ -301,7 +319,7 @@ function renderMatches() {
         <span class="opponent-text">${m.opponent || "—"}</span>
         <span class="score-text">${m.score || ""}</span>
         <span style="font-size:12px;color:#aaa;margin-left:auto;padding-left:8px;">${m.date}</span>
-        <button class="delete-btn" onclick="deleteMatch(${i})">×</button>
+        <button class="delete-btn" onclick="deleteMatch('${m.id}')">×</button>
       </div>
       ${m.notes ? `<div class="match-note-text">${m.notes}</div>` : ""}
     </div>`;
