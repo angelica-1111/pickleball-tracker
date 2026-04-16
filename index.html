@@ -220,16 +220,17 @@ function parseItemDate(dateStr) {
     const month = months[parts[0]];
     const day = parseInt(parts[1].replace(",", ""));
     const year = parseInt(parts[2]);
-    return new Date(year, month, day);
+    return new Date(year, month, day, 12, 0, 0);
   }
   return new Date(dateStr);
 }
 
 function filterByDays(arr, days) {
   if (customDateFrom && customDateTo) {
-    const from = new Date(customDateFrom);
-    const to = new Date(customDateTo);
-    to.setHours(23, 59, 59);
+    const [fy, fm, fd] = customDateFrom.split("-").map(Number);
+    const [ty, tm, td] = customDateTo.split("-").map(Number);
+    const from = new Date(fy, fm - 1, fd, 0, 0, 0);
+    const to = new Date(ty, tm - 1, td, 23, 59, 59);
     return arr.filter(item => {
       const d = parseItemDate(item.date);
       return d >= from && d <= to;
