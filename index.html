@@ -213,21 +213,26 @@ function todayStr() {
   return new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
+function parseItemDate(dateStr) {
+  return new Date(dateStr);
+}
+
 function filterByDays(arr, days) {
   if (customDateFrom && customDateTo) {
     const from = new Date(customDateFrom);
     const to = new Date(customDateTo);
     to.setHours(23, 59, 59);
     return arr.filter(item => {
-      const d = new Date(item.date);
+      const d = parseItemDate(item.date);
       return d >= from && d <= to;
     });
   }
   if (days === null) return arr;
   const now = new Date();
+  const todayDate = todayStr();
   return arr.filter(item => {
-    if (days === 0) return item.date === todayStr();
-    const d = new Date(item.date);
+    if (days === 0) return item.date === todayDate;
+    const d = parseItemDate(item.date);
     return (now - d) / (1000 * 60 * 60 * 24) <= days;
   });
 }
@@ -527,6 +532,7 @@ function applyCustomRange() {
   const from = document.getElementById("custom-from").value;
   const to = document.getElementById("custom-to").value;
   if (!from || !to) { alert("Pick both a start and end date!"); return; }
+  if (new Date(from) > new Date(to)) { alert("Start date must be before end date!"); return; }
   customDateFrom = from;
   customDateTo = to;
   activeDashFilter = "custom";
