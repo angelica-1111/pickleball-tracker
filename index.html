@@ -127,6 +127,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
       <input type="number" id="my-score" placeholder="Your score" min="0" style="width:110px;" />
       <input type="number" id="opp-score" placeholder="Their score" min="0" style="width:110px;" />
       <input type="text" id="opponent-input" placeholder="Opponent (optional)" style="width:130px;" />
+      <input type="date" id="match-date" style="height:36px;font-size:14px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
     </div>
     <input class="match-notes-input" type="text" id="match-notes" placeholder="Notes (optional)" />
     <div class="form-row"><button onclick="addMatch()">+ Add match</button></div>
@@ -355,12 +356,15 @@ async function addMatch() {
   const notes = document.getElementById("match-notes").value.trim();
   if (isNaN(myScore) || isNaN(oppScore)) { alert("Please enter both scores!"); return; }
   const result = myScore > oppScore ? "win" : "loss";
-  const entry = { result, type, opponent, my_score: myScore, opp_score: oppScore, notes, date: todayStr() };
+  const dateVal = document.getElementById("match-date").value;
+  const matchDate = dateVal ? new Date(dateVal).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : todayStr();
+  const entry = { result, type, opponent, my_score: myScore, opp_score: oppScore, notes, date: matchDate };
   const { data } = await db.from("matches").insert(entry).select();
   if (data) matches.push(data[0]);
   document.getElementById("my-score").value = "";
   document.getElementById("opp-score").value = "";
   document.getElementById("opponent-input").value = "";
+  document.getElementById("match-date").value = "";
   document.getElementById("match-notes").value = "";
   renderStats(); renderMatches();
 }
