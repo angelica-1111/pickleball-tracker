@@ -56,6 +56,8 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .badge.type { background: #f0f0f0; color: #666; }
 .score-text { font-weight: 500; color: #1a1a1a; }
 .opponent-text { flex: 1; }
+.action-btn { background: none; border: none; cursor: pointer; color: #aaa; font-size: 13px; padding: 0 3px; }
+.action-btn:hover { color: #1a1a1a; }
 .delete-btn { background: none; border: none; cursor: pointer; color: #aaa; font-size: 14px; padding: 0 2px; }
 .delete-btn:hover { color: #d94f4f; }
 .empty { font-size: 13px; color: #888; padding: 0.5rem 0; }
@@ -68,6 +70,33 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 .filter-pill { height: 32px; padding: 0 14px; font-size: 13px; border-radius: 99px; border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; cursor: pointer; }
 .filter-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; font-weight: 500; }
 .drill-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a1a; cursor: pointer; background: #f5f5f5; padding: 5px 12px; border-radius: 99px; border: 1px solid #e5e5e5; margin: 3px; }
+/* heatmap */
+.heatmap-wrap { overflow-x: auto; padding-bottom: 4px; }
+.heatmap-grid { display: flex; gap: 3px; }
+.heatmap-col { display: flex; flex-direction: column; gap: 3px; }
+.heatmap-cell { width: 13px; height: 13px; border-radius: 2px; background: #f0f0f0; cursor: default; flex-shrink: 0; }
+.heatmap-cell.l1 { background: #c6e4d4; }
+.heatmap-cell.l2 { background: #7ec8a0; }
+.heatmap-cell.l3 { background: #2a9d5c; }
+.heatmap-cell.l4 { background: #1a6e3f; }
+.heatmap-month-labels { display: flex; gap: 3px; margin-bottom: 4px; }
+.heatmap-month-label { font-size: 10px; color: #aaa; }
+.heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: #aaa; }
+.heatmap-legend-cell { width: 11px; height: 11px; border-radius: 2px; }
+/* edit modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+.modal { background: #fff; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 420px; }
+.modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1.25rem; }
+.modal-field { margin-bottom: 12px; }
+.modal-field label { font-size: 12px; color: #888; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.modal-field input, .modal-field select, .modal-field textarea { width: 100%; height: 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; color: #1a1a1a; padding: 0 10px; font-family: system-ui,sans-serif; }
+.modal-field textarea { height: 70px; padding: 8px 10px; resize: vertical; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+.modal-btns button { height: 36px; padding: 0 18px; font-size: 14px; border-radius: 8px; cursor: pointer; }
+.btn-cancel { border: 1px solid #d0d0d0; background: transparent; color: #1a1a1a; }
+.btn-cancel:hover { background: #f5f5f5; }
+.btn-save { border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; }
+.btn-save:hover { background: #333; }
 </style>
 </head>
 <body>
@@ -111,10 +140,7 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
     <button class="log-btn" onclick="logDay()">Save today's snapshot</button>
     <div id="today-note" class="today-note"></div>
   </div>
-  <div class="section">
-    <div class="section-title">History</div>
-    <div id="history-list"></div>
-  </div>
+  <div class="section"><div class="section-title">History</div><div id="history-list"></div></div>
 </div>
 
 <!-- MATCHES -->
@@ -154,6 +180,19 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 <!-- PROGRESS -->
 <div id="tab-progress" class="panel">
   <div class="section">
+    <div class="section-title">Activity heatmap</div>
+    <div id="heatmap-container"></div>
+    <div class="heatmap-legend">
+      <span>Less</span>
+      <div class="heatmap-legend-cell" style="background:#f0f0f0;"></div>
+      <div class="heatmap-legend-cell l1"></div>
+      <div class="heatmap-legend-cell l2"></div>
+      <div class="heatmap-legend-cell l3"></div>
+      <div class="heatmap-legend-cell l4"></div>
+      <span>More</span>
+    </div>
+  </div>
+  <div class="section">
     <div class="section-title">Skill trends</div>
     <div style="width:100%;overflow-x:auto;"><canvas id="skill-chart" height="220"></canvas></div>
     <div class="chart-legend" id="chart-legend"></div>
@@ -167,6 +206,18 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #1a1a1a; pad
 <!-- NOTES -->
 <div id="tab-notes" class="panel">
   <div class="section"><div class="section-title">Daily notes log</div><div id="notes-log"></div></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3 id="modal-title">Edit match</h3>
+    <div id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -200,12 +251,13 @@ const DASH_FILTERS = [
   { label: "P7D", days: 7 },
   { label: "Today", days: 0 },
 ];
-let customDateFrom = null, customDateTo = null;
 
 let current = JSON.parse(localStorage.getItem("pb_current") || "null") || SKILLS.map(s => ({ ...s, level: 5 }));
 let history = [], matches = [], drillSessions = [];
 let chartInst = null;
 let activeDashFilter = null;
+let customDateFrom = null, customDateTo = null;
+let editingType = null, editingId = null;
 
 function save() { localStorage.setItem("pb_current", JSON.stringify(current)); }
 
@@ -217,32 +269,25 @@ function parseItemDate(dateStr) {
   const months = { Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11 };
   const parts = dateStr.split(" ");
   if (parts.length === 3) {
-    const month = months[parts[0]];
-    const day = parseInt(parts[1].replace(",", ""));
-    const year = parseInt(parts[2]);
-    return new Date(year, month, day, 12, 0, 0);
+    return new Date(parseInt(parts[2]), months[parts[0]], parseInt(parts[1].replace(",","")), 12, 0, 0);
   }
   return new Date(dateStr);
 }
 
 function filterByDays(arr, days) {
   if (customDateFrom && customDateTo) {
-    const [fy, fm, fd] = customDateFrom.split("-").map(Number);
-    const [ty, tm, td] = customDateTo.split("-").map(Number);
-    const from = new Date(fy, fm - 1, fd, 0, 0, 0);
-    const to = new Date(ty, tm - 1, td, 23, 59, 59);
-    return arr.filter(item => {
-      const d = parseItemDate(item.date);
-      return d >= from && d <= to;
-    });
+    const [fy,fm,fd] = customDateFrom.split("-").map(Number);
+    const [ty,tm,td] = customDateTo.split("-").map(Number);
+    const from = new Date(fy, fm-1, fd, 0, 0, 0);
+    const to = new Date(ty, tm-1, td, 23, 59, 59);
+    return arr.filter(item => { const d = parseItemDate(item.date); return d >= from && d <= to; });
   }
   if (days === null) return arr;
   const now = new Date();
-  const todayDate = todayStr();
   return arr.filter(item => {
-    if (days === 0) return item.date === todayDate;
+    if (days === 0) return item.date === todayStr();
     const d = parseItemDate(item.date);
-    return (now - d) / (1000 * 60 * 60 * 24) <= days;
+    return (now - d) / (1000*60*60*24) <= days;
   });
 }
 
@@ -251,7 +296,7 @@ function switchTab(tab, el) {
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
   el.classList.add("active");
   document.getElementById("tab-" + tab).classList.add("active");
-  if (tab === "progress") { setTimeout(renderChart, 50); renderStreak(); }
+  if (tab === "progress") { renderHeatmap(); setTimeout(renderChart, 50); renderStreak(); }
   if (tab === "notes") renderNotesLog();
   if (tab === "drills") { renderDrillChecklist(); renderDrillStats(); renderDrillHistory(); }
   if (tab === "dashboard") renderDashboard();
@@ -266,11 +311,7 @@ async function loadFromDB() {
   if (hist) history = hist.map(h => ({ date: h.date, note: h.note, skills: h.skills }));
   if (mats) matches = mats;
   if (drills) drillSessions = drills;
-  renderDashboard();
-  renderSkills();
-  renderHistory();
-  renderStats();
-  renderMatches();
+  renderDashboard(); renderSkills(); renderHistory(); renderStats(); renderMatches();
 }
 
 /* ── SKILLS ── */
@@ -286,7 +327,7 @@ function renderSkills() {
       </div>
     </div>`).join("");
   const today = todayStr();
-  const last = history[history.length - 1];
+  const last = history[history.length-1];
   document.getElementById("today-note").textContent = (last && last.date === today) ? "Snapshot saved for today." : "";
   if (last && last.date === today && last.note) document.getElementById("day-notes").value = last.note;
 }
@@ -317,7 +358,7 @@ function renderHistory() {
   el.innerHTML = [...history].reverse().map(h => `
     <div class="history-entry">
       <div class="history-date">${h.date}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:${h.note ? '6px' : '0'};">
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:${h.note?'6px':'0'};">
         ${h.skills.map(s => `<span class="skill-pill">${s.name} <strong>${s.level}</strong></span>`).join("")}
       </div>
       ${h.note ? `<div class="history-note">"${h.note}"</div>` : ""}
@@ -326,29 +367,27 @@ function renderHistory() {
 
 /* ── MATCHES ── */
 function calcStreak(arr) {
-  arr = arr || matches;
   let cur = 0, best = 0, tmp = 0;
-  for (const m of arr) {
+  for (const m of (arr || matches)) {
     if (m.result === "win") { tmp++; cur = tmp; best = Math.max(best, tmp); } else tmp = 0;
   }
   return { cur, best };
 }
 
 function calcScoreStats(arr) {
-  arr = arr || matches;
-  const scored = arr.filter(m => m.my_score != null && m.opp_score != null);
+  const scored = (arr || matches).filter(m => m.my_score != null && m.opp_score != null);
   if (!scored.length) return null;
   const diffs = scored.map(m => m.my_score - m.opp_score);
-  const avg = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(1);
-  const biggest = scored.reduce((a, b) => (b.my_score - b.opp_score) > (a.my_score - a.opp_score) ? b : a);
-  const worst = scored.reduce((a, b) => (b.my_score - b.opp_score) < (a.my_score - a.opp_score) ? b : a);
+  const avg = (diffs.reduce((a,b) => a+b, 0) / diffs.length).toFixed(1);
+  const biggest = scored.reduce((a,b) => (b.my_score-b.opp_score) > (a.my_score-a.opp_score) ? b : a);
+  const worst = scored.reduce((a,b) => (b.my_score-b.opp_score) < (a.my_score-a.opp_score) ? b : a);
   return { avg, biggest, worst };
 }
 
 function renderStats() {
   const wins = matches.filter(m => m.result === "win").length;
   const losses = matches.filter(m => m.result === "loss").length;
-  const pct = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+  const pct = (wins+losses) > 0 ? Math.round((wins/(wins+losses))*100) : 0;
   const { cur } = calcStreak(matches);
   const ss = calcScoreStats(matches);
   document.getElementById("stats-grid").innerHTML = `
@@ -357,7 +396,7 @@ function renderStats() {
     <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
     <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>
     ${ss ? `
-    <div class="stat-card"><div class="stat-label">Avg differential</div><div class="stat-value" style="font-size:18px;">${ss.avg > 0 ? '+' : ''}${ss.avg}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg diff</div><div class="stat-value" style="font-size:18px;">${ss.avg>0?'+':''}${ss.avg}</div></div>
     <div class="stat-card"><div class="stat-label">Biggest win</div><div class="stat-value win" style="font-size:18px;">${ss.biggest.my_score}-${ss.biggest.opp_score}</div></div>
     <div class="stat-card"><div class="stat-label">Biggest loss</div><div class="stat-value loss" style="font-size:18px;">${ss.worst.my_score}-${ss.worst.opp_score}</div></div>` : ""}`;
 }
@@ -368,10 +407,10 @@ async function addMatch() {
   const type = document.getElementById("type-select").value;
   const opponent = document.getElementById("opponent-input").value.trim();
   const notes = document.getElementById("match-notes").value.trim();
+  const dateVal = document.getElementById("match-date").value;
   if (isNaN(myScore) || isNaN(oppScore)) { alert("Please enter both scores!"); return; }
   const result = myScore > oppScore ? "win" : "loss";
-  const dateVal = document.getElementById("match-date").value;
-  const matchDate = dateVal ? new Date(dateVal).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : todayStr();
+  const matchDate = dateVal ? new Date(dateVal).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"}) : todayStr();
   const entry = { result, type, opponent, my_score: myScore, opp_score: oppScore, notes, date: matchDate };
   const { data } = await db.from("matches").insert(entry).select();
   if (data) matches.push(data[0]);
@@ -396,13 +435,14 @@ function renderMatches() {
     <div class="match-entry">
       <div class="match-top">
         <span class="badge ${m.result}">${m.result}</span>
-        <span class="badge type">${m.type || "doubles"}</span>
-        <span class="opponent-text">${m.opponent || "—"}</span>
-        <span class="score-text">${m.my_score != null ? m.my_score + "–" + m.opp_score : ""}</span>
+        <span class="badge type">${m.type||"doubles"}</span>
+        <span class="opponent-text">${m.opponent||"—"}</span>
+        <span class="score-text">${m.my_score!=null ? m.my_score+"–"+m.opp_score : ""}</span>
         <span style="font-size:12px;color:#aaa;margin-left:auto;padding-left:8px;">${m.date}</span>
+        <button class="action-btn" onclick="openEditMatch('${m.id}')">✎</button>
         <button class="delete-btn" onclick="deleteMatch('${m.id}')">×</button>
       </div>
-      ${m.notes ? '<div class="match-note-text">' + m.notes + '</div>' : ""}
+      ${m.notes ? '<div class="match-note-text">'+m.notes+'</div>' : ""}
     </div>`).join("");
 }
 
@@ -433,16 +473,22 @@ async function logDrillSession() {
   renderDrillStats(); renderDrillHistory();
 }
 
+async function deleteDrillSession(id) {
+  await db.from("drill_sessions").delete().eq("id", id);
+  drillSessions = drillSessions.filter(d => d.id !== id);
+  renderDrillStats(); renderDrillHistory();
+}
+
 function renderDrillStats() {
   const el = document.getElementById("drill-stats");
   if (!el) return;
   if (!drillSessions.length) { el.innerHTML = '<div class="empty">No drill sessions yet.</div>'; return; }
   const counts = {};
-  drillSessions.forEach(s => s.drills.forEach(d => counts[d] = (counts[d] || 0) + 1));
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  drillSessions.forEach(s => s.drills.forEach(d => counts[d] = (counts[d]||0)+1));
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
   const max = sorted[0][1];
   el.innerHTML = `<div style="font-size:12px;color:#888;margin-bottom:10px;">${drillSessions.length} sessions · ${Object.keys(counts).length} drills practiced</div>` +
-    sorted.map(([name, count]) => `
+    sorted.map(([name,count]) => `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="font-size:13px;color:#1a1a1a;min-width:180px;">${name}</span>
         <div style="flex:1;height:6px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
@@ -458,15 +504,95 @@ function renderDrillHistory() {
   if (!drillSessions.length) { el.innerHTML = '<div class="empty">No sessions logged yet.</div>'; return; }
   el.innerHTML = [...drillSessions].reverse().map(s => `
     <div class="history-entry">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <span class="history-date">${s.date}</span>
-        ${s.duration ? '<span style="font-size:12px;color:#888;">' + s.duration + ' min</span>' : ""}
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${s.duration ? '<span style="font-size:12px;color:#888;">'+s.duration+' min</span>' : ""}
+          <button class="action-btn" onclick="openEditDrill('${s.id}')">✎</button>
+          <button class="delete-btn" onclick="deleteDrillSession('${s.id}')">×</button>
+        </div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;${s.notes ? 'margin-bottom:6px;' : ''}">
-        ${s.drills.map(d => '<span class="skill-pill">' + d + '</span>').join("")}
+      <div style="display:flex;flex-wrap:wrap;gap:4px;${s.notes?'margin-bottom:6px;':''}">
+        ${s.drills.map(d => '<span class="skill-pill">'+d+'</span>').join("")}
       </div>
-      ${s.notes ? '<div class="history-note">"' + s.notes + '"</div>' : ""}
+      ${s.notes ? '<div class="history-note">"'+s.notes+'"</div>' : ""}
     </div>`).join("");
+}
+
+/* ── HEATMAP ── */
+function renderHeatmap() {
+  const container = document.getElementById("heatmap-container");
+  if (!container) return;
+
+  const activityMap = {};
+  matches.forEach(m => { activityMap[m.date] = (activityMap[m.date]||0) + 1; });
+  drillSessions.forEach(d => { activityMap[d.date] = (activityMap[d.date]||0) + 1; });
+  history.forEach(h => { activityMap[h.date] = (activityMap[h.date]||0) + 1; });
+
+  const today = new Date(); today.setHours(12,0,0,0);
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - 51 * 7 + 1);
+  while (startDate.getDay() !== 0) startDate.setDate(startDate.getDate() - 1);
+
+  const weeks = [];
+  let d = new Date(startDate);
+  while (d <= today) {
+    const week = [];
+    for (let i = 0; i < 7; i++) {
+      week.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+    weeks.push(week);
+  }
+
+  const monthLabels = [];
+  let lastMonth = -1;
+  weeks.forEach((week, wi) => {
+    const m = week[0].getMonth();
+    if (m !== lastMonth) {
+      monthLabels.push({ wi, label: week[0].toLocaleDateString("en-US",{month:"short"}) });
+      lastMonth = m;
+    }
+  });
+
+  const labelRow = document.createElement("div");
+  labelRow.style.cssText = "display:flex;gap:3px;margin-bottom:4px;padding-left:0;";
+  weeks.forEach((_, wi) => {
+    const lbl = monthLabels.find(l => l.wi === wi);
+    const span = document.createElement("span");
+    span.style.cssText = "font-size:10px;color:#aaa;width:13px;flex-shrink:0;overflow:visible;white-space:nowrap;";
+    span.textContent = lbl ? lbl.label : "";
+    labelRow.appendChild(span);
+  });
+
+  const grid = document.createElement("div");
+  grid.className = "heatmap-grid";
+
+  weeks.forEach(week => {
+    const col = document.createElement("div");
+    col.className = "heatmap-col";
+    week.forEach(day => {
+      const cell = document.createElement("div");
+      cell.className = "heatmap-cell";
+      const dateKey = day.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"});
+      const count = activityMap[dateKey] || 0;
+      if (count === 1) cell.classList.add("l1");
+      else if (count === 2) cell.classList.add("l2");
+      else if (count === 3) cell.classList.add("l3");
+      else if (count >= 4) cell.classList.add("l4");
+      cell.title = `${dateKey}: ${count} activit${count===1?'y':'ies'}`;
+      if (day > today) cell.style.opacity = "0";
+      col.appendChild(cell);
+    });
+    grid.appendChild(col);
+  });
+
+  const wrap = document.createElement("div");
+  wrap.className = "heatmap-wrap";
+  wrap.appendChild(labelRow);
+  wrap.appendChild(grid);
+  container.innerHTML = "";
+  container.appendChild(wrap);
 }
 
 /* ── PROGRESS ── */
@@ -487,17 +613,17 @@ function renderChart() {
   if (chartInst) { chartInst.destroy(); chartInst = null; }
   if (history.length < 2) {
     ctx.fillStyle = "#aaa"; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("Log at least 2 snapshots to see your trend.", w / 2, 110);
+    ctx.fillText("Log at least 2 snapshots to see your trend.", w/2, 110);
     return;
   }
   chartInst = new Chart(ctx, {
     type: "line",
     data: {
       labels: history.map(h => h.date),
-      datasets: SKILLS.map((s, i) => ({
+      datasets: SKILLS.map((s,i) => ({
         label: s.name,
-        data: history.map(h => { const f = h.skills.find(sk => sk.key === s.key); return f ? f.level : null; }),
-        borderColor: COLORS[i % COLORS.length],
+        data: history.map(h => { const f = h.skills.find(sk => sk.key===s.key); return f ? f.level : null; }),
+        borderColor: COLORS[i%COLORS.length],
         backgroundColor: "transparent",
         tension: 0.35, pointRadius: 4, borderWidth: 2,
       }))
@@ -511,8 +637,8 @@ function renderChart() {
       }
     }
   });
-  document.getElementById("chart-legend").innerHTML = SKILLS.map((s, i) =>
-    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></div>${s.name}</div>`
+  document.getElementById("chart-legend").innerHTML = SKILLS.map((s,i) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${s.name}</div>`
   ).join("");
 }
 
@@ -532,8 +658,7 @@ function renderNotesLog() {
 /* ── DASHBOARD ── */
 function setDashFilter(days) {
   activeDashFilter = days;
-  customDateFrom = null;
-  customDateTo = null;
+  customDateFrom = null; customDateTo = null;
   renderDashboard();
 }
 
@@ -542,8 +667,7 @@ function applyCustomRange() {
   const to = document.getElementById("custom-to").value;
   if (!from || !to) { alert("Pick both a start and end date!"); return; }
   if (new Date(from) > new Date(to)) { alert("Start date must be before end date!"); return; }
-  customDateFrom = from;
-  customDateTo = to;
+  customDateFrom = from; customDateTo = to;
   activeDashFilter = "custom";
   renderDashboard();
 }
@@ -553,49 +677,44 @@ function renderDashboard() {
   if (el) {
     const isCustom = activeDashFilter === "custom";
     el.innerHTML = DASH_FILTERS.map(f =>
-      `<button class="filter-pill ${activeDashFilter === f.days ? 'active' : ''}" onclick="setDashFilter(${f.days === null ? 'null' : f.days})">${f.label}</button>`
+      `<button class="filter-pill ${activeDashFilter===f.days?'active':''}" onclick="setDashFilter(${f.days===null?'null':f.days})">${f.label}</button>`
     ).join("") + `
-    <button class="filter-pill ${isCustom ? 'active' : ''}" onclick="document.getElementById('custom-range').style.display = document.getElementById('custom-range').style.display === 'none' ? 'flex' : 'none'">Custom</button>
-    <div id="custom-range" style="display:${isCustom ? 'flex' : 'none'};gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-top:6px;">
-      <input type="date" id="custom-from" value="${customDateFrom || ''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
+    <button class="filter-pill ${isCustom?'active':''}" onclick="document.getElementById('custom-range').style.display=document.getElementById('custom-range').style.display==='none'?'flex':'none'">Custom</button>
+    <div id="custom-range" style="display:${isCustom?'flex':'none'};gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-top:6px;">
+      <input type="date" id="custom-from" value="${customDateFrom||''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
       <span style="font-size:13px;color:#888;">to</span>
-      <input type="date" id="custom-to" value="${customDateTo || ''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
+      <input type="date" id="custom-to" value="${customDateTo||''}" style="height:32px;font-size:13px;border-radius:8px;border:1px solid #d0d0d0;padding:0 10px;background:#fff;color:#1a1a1a;" />
       <button class="filter-pill" onclick="applyCustomRange()" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a;">Apply</button>
     </div>`;
   }
-
   const fm = filterByDays(matches, activeDashFilter);
   const fh = filterByDays(history, activeDashFilter);
-  const wins = fm.filter(m => m.result === "win").length;
-  const losses = fm.filter(m => m.result === "loss").length;
-  const pct = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+  const wins = fm.filter(m => m.result==="win").length;
+  const losses = fm.filter(m => m.result==="loss").length;
+  const pct = (wins+losses) > 0 ? Math.round((wins/(wins+losses))*100) : 0;
   const { cur } = calcStreak(fm);
-
   document.getElementById("dash-stats").innerHTML = `
     <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value win">${wins}</div></div>
     <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value loss">${losses}</div></div>
     <div class="stat-card"><div class="stat-label">Win rate</div><div class="stat-value">${pct}%</div></div>
     <div class="stat-card"><div class="stat-label">Win streak</div><div class="stat-value streak">${cur}</div></div>`;
-
   document.getElementById("dash-skills").innerHTML = current.map(s => `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
       <span style="font-size:12px;color:#555;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</span>
       <div style="flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;">
-        <div style="width:${s.level * 10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
+        <div style="width:${s.level*10}%;height:100%;background:#1a1a1a;border-radius:99px;"></div>
       </div>
       <span style="font-size:12px;color:#888;min-width:20px;text-align:right;">${s.level}</span>
     </div>`).join("");
-
   const recent = [...fm].slice(-5).reverse();
   document.getElementById("dash-matches").innerHTML = recent.length
     ? recent.map(m => `
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <span class="badge ${m.result}">${m.result}</span>
-          <span style="font-size:13px;color:#555;flex:1;">${m.opponent || "—"}</span>
+          <span style="font-size:13px;color:#555;flex:1;">${m.opponent||"—"}</span>
           <span style="font-size:12px;color:#aaa;">${m.date}</span>
         </div>`).join("")
     : '<div class="empty">No matches yet.</div>';
-
   const lastNote = [...fh].reverse().find(h => h.note);
   document.getElementById("dash-note").innerHTML = lastNote
     ? `<div style="display:flex;gap:16px;align-items:flex-start;">
@@ -603,23 +722,77 @@ function renderDashboard() {
         <span style="font-size:14px;color:#1a1a1a;line-height:1.6;">${lastNote.note}</span>
        </div>`
     : '<div class="empty">No notes yet.</div>';
-
-  const strongest = current.reduce((a, b) => a.level >= b.level ? a : b);
+  const strongest = current.reduce((a,b) => a.level>=b.level?a:b);
   const mostImproved = (() => {
     if (fh.length < 2) return null;
-    const prev = fh[fh.length - 2].skills;
-    const latest = fh[fh.length - 1].skills;
+    const prev = fh[fh.length-2].skills, latest = fh[fh.length-1].skills;
     let best = null, bestDelta = 0;
     for (const s of latest) {
-      const p = prev.find(x => x.key === s.key);
-      if (p && s.level - p.level > bestDelta) { bestDelta = s.level - p.level; best = s; }
+      const p = prev.find(x => x.key===s.key);
+      if (p && s.level-p.level > bestDelta) { bestDelta = s.level-p.level; best = s; }
     }
     return best && bestDelta > 0 ? { name: best.name, delta: bestDelta } : null;
   })();
-
   let insight = `<span style="font-size:13px;color:#555;">Strongest skill: <strong>${strongest.name}</strong> (${strongest.level}/10)</span>`;
   if (mostImproved) insight += `<span style="font-size:13px;color:#555;margin-left:16px;">Most improved: <strong>${mostImproved.name}</strong> +${mostImproved.delta}</span>`;
   document.getElementById("dash-insight").innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0.75rem 1rem;background:#f5f5f5;border-radius:8px;">${insight}</div>`;
+}
+
+/* ── EDIT MODAL ── */
+function openEditMatch(id) {
+  const m = matches.find(x => x.id === id);
+  if (!m) return;
+  editingType = "match"; editingId = id;
+  document.getElementById("modal-title").textContent = "Edit match";
+  document.getElementById("modal-body").innerHTML = `
+    <div class="modal-field"><label>Type</label>
+      <select id="edit-type"><option value="doubles" ${m.type==="doubles"?"selected":""}>Doubles</option><option value="singles" ${m.type==="singles"?"selected":""}>Singles</option></select></div>
+    <div class="modal-field"><label>Your score</label><input id="edit-my-score" type="number" value="${m.my_score??""}" min="0" /></div>
+    <div class="modal-field"><label>Their score</label><input id="edit-opp-score" type="number" value="${m.opp_score??""}" min="0" /></div>
+    <div class="modal-field"><label>Opponent</label><input id="edit-opponent" type="text" value="${m.opponent||""}" /></div>
+    <div class="modal-field"><label>Notes</label><textarea id="edit-notes">${m.notes||""}</textarea></div>`;
+  document.getElementById("edit-modal").style.display = "flex";
+}
+
+function openEditDrill(id) {
+  const s = drillSessions.find(x => x.id === id);
+  if (!s) return;
+  editingType = "drill"; editingId = id;
+  document.getElementById("modal-title").textContent = "Edit drill session";
+  document.getElementById("modal-body").innerHTML = `
+    <div class="modal-field"><label>Duration (mins)</label><input id="edit-duration" type="number" value="${s.duration||""}" min="1" /></div>
+    <div class="modal-field"><label>Notes</label><textarea id="edit-notes">${s.notes||""}</textarea></div>`;
+  document.getElementById("edit-modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("edit-modal").style.display = "none";
+  editingType = null; editingId = null;
+}
+
+async function saveEdit() {
+  if (editingType === "match") {
+    const myScore = parseInt(document.getElementById("edit-my-score").value);
+    const oppScore = parseInt(document.getElementById("edit-opp-score").value);
+    const type = document.getElementById("edit-type").value;
+    const opponent = document.getElementById("edit-opponent").value.trim();
+    const notes = document.getElementById("edit-notes").value.trim();
+    if (isNaN(myScore) || isNaN(oppScore)) { alert("Please enter both scores!"); return; }
+    const result = myScore > oppScore ? "win" : "loss";
+    const updates = { result, type, opponent, my_score: myScore, opp_score: oppScore, notes };
+    await db.from("matches").update(updates).eq("id", editingId);
+    const idx = matches.findIndex(m => m.id === editingId);
+    if (idx !== -1) Object.assign(matches[idx], updates);
+    renderStats(); renderMatches();
+  } else if (editingType === "drill") {
+    const duration = parseInt(document.getElementById("edit-duration").value) || null;
+    const notes = document.getElementById("edit-notes").value.trim();
+    await db.from("drill_sessions").update({ duration, notes }).eq("id", editingId);
+    const idx = drillSessions.findIndex(d => d.id === editingId);
+    if (idx !== -1) Object.assign(drillSessions[idx], { duration, notes });
+    renderDrillStats(); renderDrillHistory();
+  }
+  closeModal();
 }
 
 /* ── EXPORT / IMPORT ── */
@@ -627,16 +800,12 @@ function exportData() {
   const data = { current, history, matches, drillSessions, exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "pickleball-data.json";
-  a.click();
+  const a = document.createElement("a"); a.href = url; a.download = "pickleball-data.json"; a.click();
   URL.revokeObjectURL(url);
 }
 
 function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
     try {
@@ -650,8 +819,7 @@ function importData(e) {
       alert("Imported!");
     } catch { alert("Couldn't read that file."); }
   };
-  reader.readAsText(file);
-  e.target.value = "";
+  reader.readAsText(file); e.target.value = "";
 }
 
 loadFromDB();
